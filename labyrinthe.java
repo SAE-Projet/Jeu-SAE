@@ -37,17 +37,37 @@ public class Plateau {
     public static void afficherPlateau(int[][][] plateau) {
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
-                System.out.print("1" + plateau[i][j][1] + "1" + " | ");
+                System.out.print("#");
+                if (plateau[i][j][1] == 0)
+                    System.out.print(" ");
+                else
+                    System.out.print("#");
+                System.out.print("#");
             }
             System.out.println();
             for (int j = 0; j < 7; j++) {
-                System.out.print(plateau[i][j][0] + "" + plateau[i][j][4] + "" + plateau[i][j][2] + " | ");
+                if (plateau[i][j][0] == 0)
+                    System.out.print(" ");
+                else
+                    System.out.print("#");
+                if (plateau[i][j][4] == 0)
+                    System.out.print(" ");
+                else
+                    System.out.print("#");
+                if (plateau[i][j][2] == 0)
+                    System.out.print(" ");
+                else
+                    System.out.print("#");
             }
             System.out.println();
             for (int j = 0; j < 7; j++) {
-                System.out.print("1" + plateau[i][j][3] + "1" + " | ");
+                System.out.print("#");
+                if (plateau[i][j][3] == 0)
+                    System.out.print(" ");
+                else
+                    System.out.print("#");
+                System.out.print("#");
             }
-            System.out.println();
             System.out.println();
         }
     }
