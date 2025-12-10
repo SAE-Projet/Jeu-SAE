@@ -3,6 +3,30 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int nbJoueurs;
+        String pseudo1, pseudo2, pseudo3, pseudo4;
+        do {
+            System.out.print("Combien êtes-vous de joueurs ? ( Entre 2 et 4 joueurs ) - ");
+            nbJoueurs = scanner.nextInt();
+        } while(nbJoueurs < 2 || nbJoueurs > 4);
+        scanner.nextLine();
+        System.out.print("Joueur n°1 veuillez entrer votre pseudo : ");
+        pseudo1 = scanner.nextLine();
+        System.out.println(pseudo1);
+        System.out.print("Joueur n°2 veuillez entrer votre pseudo : ");
+        pseudo2 = scanner.nextLine();
+        System.out.println(pseudo2);
+        if(nbJoueurs >= 3) {
+            System.out.print("Joueur n°3 veuillez entrer votre pseudo : ");
+            pseudo3 = scanner.nextLine();
+            System.out.println(pseudo3);
+        }
+        if(nbJoueurs == 4) {
+            System.out.print("Joueur n°4 veuillez entrer votre pseudo : ");
+            pseudo4 = scanner.nextLine();
+            System.out.println(pseudo4);
+        }
         int[][][] plateau = Plateau.creationPlateau();
         Plateau.afficherPlateau(plateau);
     }
