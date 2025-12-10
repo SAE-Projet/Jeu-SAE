@@ -1,38 +1,52 @@
-Objectif du jeu
-Chaque joueur doit atteindre un objectif précis dans un labyrinthe (exemple : récupérer un trésor, atteindre une sortie – Je vais plutôt pencher vers la sortie.).
-Le premier joueur à atteindre son objectif remporte la partie.
-Le plateau
-    • La grille est représentée par un tableau 2D (On hésite entre 9x9).
-    • Certaines cases sont des murs et d’autres sont des chemins libres.
-    • Les murs peuvent bouger à chaque tour (une ligne ou une colonne glisse).
-    • Les joueurs sont représentés par un symbole (ex : A et B).
-    • Les objectifs sont représentés par un symbole spécifique (ex : X).
-Déplacements
-    • Chaque joueur peut se déplacer d’une case à la fois : haut, bas, gauche, droite.
-    • Les murs empêchent le passage.
-    • Les déplacements sont saisis par l’utilisateur (z = haut, s = bas, q = gauche, d = droite).
-Modification du labyrinthe
-Après chaque déplacement :
-    • Une ligne ou colonne du labyrinthe peut glisser d’une case dans une direction (haut, bas, gauche, droite).
-    • Les murs et les chemins glissent tous ensemble.
-    • Cela peut ouvrir de nouvelles routes ou bloquer temporairement des joueurs.
-Exemple :
-La 3e colonne glisse vers le bas : toutes les cases de cette colonne se déplacent d’une case vers le bas, et la dernière case revient en haut (comme une boucle).
-Tours de jeu
-    • Les joueurs jouent à tour de rôle.
-    • Chaque tour se compose de 2 étapes :
-    1. Déplacement d’une case.
-    2. Glissement d’une ligne ou colonne (optionnel ou obligatoire selon difficulté).
-Règles spéciales
-    • On ne peut pas traverser les murs (#).
-    • Les joueurs peuvent se croiser mais pas occuper la même case.
-    • Si un glissement bloque complètement un joueur, il doit attendre son prochain tour pour bouger.
-    • Le labyrinthe peut être pré-généré ou aléatoire au début du jeu.
-Fin de partie
-    • La partie se termine dès qu’un joueur atteint son objectif.
-    • L’ordinateur ou l’autre joueur peut encore continuer pour essayer d’atteindre son objectif secondaire ( à voir mais je pense pas ).
-    • Affichage final : victoire du joueur qui a atteint son objectif en premier.
-Éléments optionnels
-    • Trésors à collecter sur le chemin (points bonus).
-    • Portails pour se téléporter à une autre case.
-    • Pièges qui bloquent ou repoussent le joueur.
+import java.util.Random;
+
+public class Plateau {
+    public static int[][][] creationPlateau() {
+        Random rdm = new Random();
+        int[][][] plateau = new int[7][7][5];
+        int nbrdm;
+
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                for (int l = 0; l < 5; l++) {
+                    plateau[i][j][l] = -1;
+                }
+            }
+        }
+
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                plateau[i][j][4] = 0;
+                for (int l = 0; l < 2; l++) {
+                    do {
+                        nbrdm = rdm.nextInt(4);
+                    } while (plateau[i][j][nbrdm] != -1);
+                    plateau[i][j][nbrdm] = 0;
+                }
+                for (int l = 0; l < 4; l++) {
+                    if (plateau[i][j][l] == -1)
+                        plateau[i][j][l] = rdm.nextInt(2);
+                }
+            }
+        }
+        return plateau;
+    }
+
+    public static void afficherPlateau(int[][][] plateau) {
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                System.out.print("1" + plateau[i][j][1] + "1" + " | ");
+            }
+            System.out.println();
+            for (int j = 0; j < 7; j++) {
+                System.out.print(plateau[i][j][0] + "" + plateau[i][j][4] + "" + plateau[i][j][2] + " | ");
+            }
+            System.out.println();
+            for (int j = 0; j < 7; j++) {
+                System.out.print("1" + plateau[i][j][3] + "1" + " | ");
+            }
+            System.out.println();
+            System.out.println();
+        }
+    }
+}
