@@ -3,8 +3,7 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Plateau {
-    /* La fonction creationPlateau initialise un plateau à trois dimensions de taille 7x7 avec 5 positions par tuile.
-     */
+    // La fonction creationPlateau initialise un plateau à trois dimensions de taille 7x7 avec 5 positions par tuile.
     public static int[][][] creationPlateau(ArrayList<Integer> idJoueurs) {
         Random rdm = new Random();
         int[][][] plateau = new int[7][7][5];
@@ -87,6 +86,14 @@ public class Plateau {
     public static void afficherPlateau(int[][][] plateau) {
         final String MUR = "█";
 
+        final String[] couleurs = {
+            "\u001B[34m",  // bleu (joueur 1)
+            "\u001B[31m", // rouge (joueur 2)
+            "\u001B[32m", // vert (joueur 3)
+            "\u001B[33m" // jaune (joueur 4)
+        };
+        final String RESET = "\u001B[0m";
+
         for (int i = 0; i < 7; i++) {
             // Ligne du haut de chaque case (3 caractères par case : MUR + (espace|MUR) + MUR)
             for (int j = 0; j < 7; j++) {
@@ -106,11 +113,11 @@ public class Plateau {
                 else
                     System.out.print(MUR);
 
-                // on garde '>' comme dans l'affichage original
-                if (plateau[i][j][4] == 0)
+                int joueur = plateau[i][j][4]; // position du joueur
+                if (joueur == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(">");
+                    System.out.print(couleurs[joueur-2] + "●" + RESET);
 
                 if (plateau[i][j][2] == 0)
                     System.out.print(" ");
