@@ -94,15 +94,17 @@ public class Plateau {
         };
         final String RESET = "\u001B[0m";
 
+        final String couleurMur = "\u001B[38;5;94m"; // marron
+
         for (int i = 0; i < 7; i++) {
             // Ligne du haut de chaque case (3 caractères par case : MUR + (espace|MUR) + MUR)
             for (int j = 0; j < 7; j++) {
-                System.out.print(MUR);
+                System.out.print(couleurMur + MUR);
                 if (plateau[i][j][1] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(MUR);
-                System.out.print(MUR);
+                    System.out.print(couleurMur + MUR);
+                System.out.print(couleurMur + MUR);
             }
             System.out.println();
 
@@ -111,7 +113,7 @@ public class Plateau {
                 if (plateau[i][j][0] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(MUR);
+                    System.out.print(couleurMur + MUR);
 
                 int joueur = plateau[i][j][4]; // position du joueur
                 if (joueur == 0)
@@ -122,18 +124,18 @@ public class Plateau {
                 if (plateau[i][j][2] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(MUR);
+                    System.out.print(couleurMur + MUR);
             }
             System.out.println();
 
             // Ligne du bas (même logique que la ligne du haut)
             for (int j = 0; j < 7; j++) {
-                System.out.print(MUR);
+                System.out.print(couleurMur + MUR);
                 if (plateau[i][j][3] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(MUR);
-                System.out.print(MUR);
+                    System.out.print(couleurMur + MUR);
+                System.out.print(couleurMur + MUR);
             }
             System.out.println();
         }
