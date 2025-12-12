@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public class Plateau {
@@ -64,21 +63,26 @@ public class Plateau {
                 }
             }
         }
-        Collections.shuffle(idJoueurs, rdm);
-        int temp, rdmcoin = -1;
-        for (int i = 0; i < idJoueurs.size(); i++) {
-            temp = rdmcoin;
-            do {
-                rdmcoin = rdm.nextInt(4);
-            } while (temp == rdmcoin);
-            if (rdmcoin == 0)
-                plateau[0][0][4] = idJoueurs.get(i);
-            else if (rdmcoin == 1)
-                plateau[0][6][4] = idJoueurs.get(i);
-            else if (rdmcoin == 2)
-                plateau[6][0][4] = idJoueurs.get(i);
-            else
-                plateau[6][6][4] = idJoueurs.get(i);
+        // Les IDs des joueurs sont déjà dans l'ordre (J1 en index 0, J2 en index 1, etc.)
+
+        // J1 (index 0) : Haut-Gauche (0, 0)
+        if (idJoueurs.size() >= 1) {
+            plateau[0][0][4] = idJoueurs.get(0);
+        }
+
+        // J2 (index 1) : Haut-Droite (0, 6)
+        if (idJoueurs.size() >= 2) {
+            plateau[0][6][4] = idJoueurs.get(1);
+        }
+
+        // J3 (index 2) : Bas-Gauche (6, 0)
+        if (idJoueurs.size() >= 3) {
+            plateau[6][0][4] = idJoueurs.get(2);
+        }
+
+        // J4 (index 3) : Bas-Droite (6, 6)
+        if (idJoueurs.size() >= 4) {
+            plateau[6][6][4] = idJoueurs.get(3);
         }
         return plateau;
     }
@@ -142,3 +146,4 @@ public class Plateau {
     }
 
 }
+
