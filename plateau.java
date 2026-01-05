@@ -2,7 +2,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Plateau {
-    // La fonction creationPlateau initialise un plateau à trois dimensions de taille 7x7 avec 5 positions par tuile.
+    /*  La fonction creationPlateau initialise un plateau à trois dimensions de taille 7x7 avec 5 positions par tuile.
+        1ère dimension -> lignes
+        2ème dimension -> colonnes
+        3ème dimension -> cases ( 0 = gauche , 1 = haut , 2 = droite , 3 = bas , 4 = milieu )
+     */
     public static int[][][] creationPlateau(ArrayList<Integer> idJoueurs) {
         Random rdm = new Random();
         int[][][] plateau = new int[7][7][5];
@@ -103,12 +107,12 @@ public class Plateau {
         for (int i = 0; i < 7; i++) {
             // Ligne du haut de chaque case (3 caractères par case : MUR + (espace|MUR) + MUR)
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR);
+                System.out.print(couleurMur + MUR + RESET);
                 if (plateau[i][j][1] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(couleurMur + MUR);
-                System.out.print(couleurMur + MUR);
+                    System.out.print(couleurMur + MUR + RESET);
+                System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
 
@@ -117,7 +121,7 @@ public class Plateau {
                 if (plateau[i][j][0] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(couleurMur + MUR);
+                    System.out.print(couleurMur + MUR + RESET);
 
                 int joueur = plateau[i][j][4]; // position du joueur
                 if (joueur == 0)
@@ -128,22 +132,22 @@ public class Plateau {
                 if (plateau[i][j][2] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(couleurMur + MUR);
+                    System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
 
             // Ligne du bas (même logique que la ligne du haut)
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR);
+                System.out.print(couleurMur + MUR + RESET);
                 if (plateau[i][j][3] == 0)
                     System.out.print(" ");
                 else
-                    System.out.print(couleurMur + MUR);
-                System.out.print(couleurMur + MUR);
+                    System.out.print(couleurMur + MUR + RESET);
+                System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
         }
+        System.out.println();
     }
-
 }
 
