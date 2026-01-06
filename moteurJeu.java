@@ -90,12 +90,14 @@ public class MoteurJeu {
         while (true) {
             int idJoueur = idJoueurs.get(joueurCourant);
 
-            System.out.println("\nTour du joueur " + pseudos.get(joueurCourant));
+            System.out.println("Tour du joueur " + pseudos.get(joueurCourant));
             tour(plateau, idJoueur);
+            System.out.println("Le plateau tremble...");
+            Plateau.faireCoulisser(plateau);
+            Plateau.afficherPlateau(plateau);
 
             // joueur suivant
             joueurCourant++;
-
             if (joueurCourant == nbJoueurs) {
                 joueurCourant = 0;
             }
