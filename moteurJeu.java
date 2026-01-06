@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
@@ -106,109 +105,123 @@ public class MoteurJeu {
     public static int[] trouverJoueur(int[][][] tab, int idJoueur) {
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
-                if (tab[i][j][4] == idJoueur) {
-                    return new int[]{i, j};
+                for (int k = 0; k < 5; k++) {
+                    if (tab[i][j][k] == idJoueur)
+                        return new int[]{i, j, k};
                 }
             }
         }
         return null;
     }
 
-    public static int compterSorties(int[][][] tab, int x, int y) {
-        int sorties = 0;
-
-        if (tab[x][y][0] == 0 && y > 0) sorties++;
-        if (tab[x][y][2] == 0 && y < 6) sorties++;
-        if (tab[x][y][1] == 0 && x > 0) sorties++;
-        if (tab[x][y][3] == 0 && x < 6) sorties++;
-
-        return sorties;
-    }
-
-    public static String directionAuto(int[][][] tab, int x, int y) {
-
-        if (tab[x][y][0] == 0 && y > 0) return "g";
-        if (tab[x][y][2] == 0 && y < 6) return "d";
-        if (tab[x][y][1] == 0 && x > 0) return "h";
-        if (tab[x][y][3] == 0 && x < 6) return "b";
-
-        return "";
-    }
-
     public static void tour(int[][][] tab, int idJoueur) {
         Scanner scanner = new Scanner(System.in);
-        int nbpas = lancerDé();
-        boolean aDejaChoisi = false; // message intersection à partir du 2e choix
-
-        int[] pos = trouverJoueur(tab, idJoueur);
-        int x = pos[0];
-        int y = pos[1];
-
-        int pasRestants = nbpas;
+        int pasRestants = lancerDé();
 
         while (pasRestants > 0) {
+            int[] pos = trouverJoueur(tab, idJoueur);
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
 
-            int sorties = compterSorties(tab, x, y);
-            String direction = "";
-
-            // Intersection (≥ 2 sorties) → demande au joueur
-            if (sorties >= 2) {
-                if (aDejaChoisi) {
-                    System.out.println("Intersection — il vous reste " + pasRestants + " pas");
-                }
-                System.out.print("Direction ? (g, d, h, b) : ");
-                direction = scanner.nextLine();
-                aDejaChoisi = true;
-            }
-            // Chemin unique → avance automatique
-            else if (sorties == 1) {
-                direction = directionAuto(tab, x, y);
-                System.out.println("Chemin unique — déplacement automatique (" + pasRestants + " pas restants)");
-            }
-            // Cul-de-sac → on arrête
-            else {
-                System.out.println("Cul-de-sac !");
-                break;
-            }
+            System.out.println("Il vous reste " + pasRestants + " pas");
+            System.out.print("Direction ? (g, d, h, b) : ");
+            String direction = scanner.nextLine();
 
             boolean deplacementOK = false;
+            int nx = x, ny = y, nz = z;
 
-            // GAUCHE
-            if (direction.equalsIgnoreCase("g") && tab[x][y][0] == 0 && y > 0 && tab[x][y-1][2] == 0) {
-                tab[x][y][4] = 0;
-                tab[x][y-1][4] = idJoueur;
-                y = y - 1;
-                deplacementOK = true;
-            }
-            // DROITE
-            else if (direction.equalsIgnoreCase("d") && tab[x][y][2] == 0 && y < 6 && tab[x][y+1][0] == 0) {
-                tab[x][y][4] = 0;
-                tab[x][y+1][4] = idJoueur;
-                y = y + 1;
-                deplacementOK = true;
-            }
-            // HAUT
-            else if (direction.equalsIgnoreCase("h") && tab[x][y][1] == 0 && x > 0 && tab[x-1][y][3] == 0) {
-                tab[x][y][4] = 0;
-                tab[x-1][y][4] = idJoueur;
-                x = x - 1;
-                deplacementOK = true;
-            }
-            // BAS
-            else if (direction.equalsIgnoreCase("b") && tab[x][y][3] == 0 && x < 6 && tab[x+1][y][1] == 0) {
-                tab[x][y][4] = 0;
-                tab[x+1][y][4] = idJoueur;
-                x = x + 1;
-                deplacementOK = true;
+            // --- BAS ---
+            if (direction.equalsIgnoreCase("b")) {
+                if (z == 1) {
+                    nz = 4;
+                    deplacementOK = true;
+                } // Bord haut -> Milieu
+
+                else if (z == 4 && tab[x][y][3] == 0) {
+                    nz = 3;
+                    deplacementOK = true;
+                } // Milieu -> Bord bas
+
+                else if (z == 3 && x < 6) { // Déjà sur le bord bas -> Changement de case
+                    if (tab[x+1][y][1] == 0) {
+                        nx = x + 1;
+                        nz = 1;
+                        deplacementOK = true;
+                    }
+                }
             }
 
-            if (!deplacementOK) {
+            // --- HAUT ---
+            else if (direction.equalsIgnoreCase("h")) {
+                if (z == 3) {
+                    nz = 4;
+                    deplacementOK = true;
+                } // Bord bas -> Milieu
+
+                else if (z == 4 && tab[x][y][1] == 0) {
+                    nz = 1;
+                    deplacementOK = true;
+                } // Milieu -> Bord haut
+
+                else if (z == 1 && x > 0) { // Déjà sur le bord haut -> Changement de case
+                    if (tab[x-1][y][3] == 0) {
+                        nx = x - 1;
+                        nz = 3;
+                        deplacementOK = true;
+                    }
+                }
+            }
+
+            // --- DROITE ---
+            else if (direction.equalsIgnoreCase("d")) {
+                if (z == 0) {
+                    nz = 4;
+                    deplacementOK = true;
+                } // Bord gauche -> Milieu
+
+                else if (z == 4 && tab[x][y][2] == 0) {
+                    nz = 2;
+                    deplacementOK = true; } // Milieu -> Bord droit
+
+                else if (z == 2 && y < 6) { // Déjà sur le bord droit -> Changement de case
+                    if (tab[x][y+1][0] == 0) {
+                        ny = y + 1;
+                        nz = 0;
+                        deplacementOK = true;
+                    }
+                }
+            }
+
+            // --- GAUCHE ---
+            else if (direction.equalsIgnoreCase("g")) {
+                if (z == 2) {
+                    nz = 4;
+                    deplacementOK = true;
+                } // Bord droit -> Milieu
+
+                else if (z == 4 && tab[x][y][0] == 0) {
+                    nz = 0;
+                    deplacementOK = true;
+                } // Milieu -> Bord gauche
+
+                else if (z == 0 && y > 0) { // Déjà sur le bord gauche -> Changement de case
+                    if (tab[x][y-1][2] == 0) {
+                        ny = y - 1;
+                        nz = 2;
+                        deplacementOK = true;
+                    }
+                }
+            }
+
+            if (deplacementOK) {
+                tab[x][y][z] = 0;
+                tab[nx][ny][nz] = idJoueur;
+                pasRestants--;
+                Plateau.afficherPlateau(tab);
+            } else {
                 System.out.println("Déplacement impossible !");
-                continue; // pas consommé
             }
-
-            pasRestants--; // consommer un pas
-            Plateau.afficherPlateau(tab);
         }
     }
 
