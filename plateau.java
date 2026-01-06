@@ -10,144 +10,144 @@ public class Plateau {
     public static int[][][] creationPlateau(ArrayList<Integer> idJoueurs) {
         Random rdm = new Random();
         int[][][] plateau = new int[7][7][5];
-        int nbrdm;
 
+        // Initialisation : tout fermé par défaut
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
-                for (int l = 0; l < 5; l++) {
-                    plateau[i][j][l] = -1;
+                for (int k = 0; k < 5; k++) {
+                    plateau[i][j][k] = 1;
                 }
+                plateau[i][j][4] = 0; // pas de joueur
             }
         }
 
+        // Génération cohérente des murs
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
-                plateau[i][j][4] = 0;
-                for (int l = 0; l < 2; l++) {
-                    do {
-                        nbrdm = rdm.nextInt(4);
-                    } while (plateau[i][j][nbrdm] != -1);
-                    plateau[i][j][nbrdm] = 0;
-                }
-                // Coins
-                if (i == 0 && j == 0) { // coin haut-gauche
-                    plateau[i][j][0] = 1; // gauche fermé
-                    plateau[i][j][1] = 1; // haut fermé
-                    plateau[i][j][2] = 0; // droite ouvert
-                    plateau[i][j][3] = 0; // bas ouvert
-                }
-                else if (i == 0 && j == 6) { // coin haut-droite
-                    plateau[i][j][0] = 0; // gauche ouvert
-                    plateau[i][j][1] = 1; // haut fermé
-                    plateau[i][j][2] = 1; // droite fermé
-                    plateau[i][j][3] = 0; // bas ouvert
-                }
-                else if (i == 6 && j == 0) { // coin bas-gauche
-                    plateau[i][j][0] = 1; // gauche fermé
-                    plateau[i][j][1] = 0; // haut ouvert
-                    plateau[i][j][2] = 0; // droite ouvert
-                    plateau[i][j][3] = 1; // bas fermé
-                }
-                else if (i == 6 && j == 6) { // coin bas-droite
-                    plateau[i][j][0] = 0; // gauche ouvert
-                    plateau[i][j][1] = 0; // haut ouvert
-                    plateau[i][j][2] = 1; // droite fermé
-                    plateau[i][j][3] = 1; // bas fermé
-                }
-                // Fermeture des bords
-                if (i == 0) plateau[i][j][1] = 1; // ligne du haut
-                if (i == 6) plateau[i][j][3] = 1; // ligne du bas
-                if (j == 0) plateau[i][j][0] = 1; // colonne gauche
-                if (j == 6) plateau[i][j][2] = 1; // colonne droite
-                // Reste aléatoire
-                for (int k = 0; k < 4; k++) {
-                    if (plateau[i][j][k] == -1) {
-                        plateau[i][j][k] = rdm.nextInt(2);
-                    }
-                }
+
+                // GAUCHE
+                if (j == 0) plateau[i][j][0] = 1;
+                else plateau[i][j][0] = plateau[i][j - 1][2];
+
+                // HAUT
+                if (i == 0) plateau[i][j][1] = 1;
+                else plateau[i][j][1] = plateau[i - 1][j][3];
+
+                // DROITE
+                if (j == 6) plateau[i][j][2] = 1;
+                else plateau[i][j][2] = rdm.nextInt(2);
+
+                // BAS
+                if (i == 6) plateau[i][j][3] = 1;
+                else plateau[i][j][3] = rdm.nextInt(2);
             }
         }
-        // Les IDs des joueurs sont déjà dans l'ordre (J1 en index 0, J2 en index 1, etc.)
 
-        // J1 (index 0) : Haut-Gauche (0, 0)
-        if (idJoueurs.size() >= 1) {
+        // Placement des joueurs avec au moins 2 sorties
+        if (idJoueurs.size() >= 1) { // J1 Haut-Gauche
             plateau[0][0][4] = idJoueurs.get(0);
+            plateau[0][0][2] = 0; // droite
+            plateau[0][0][3] = 0; // bas
         }
 
-        // J2 (index 1) : Haut-Droite (0, 6)
-        if (idJoueurs.size() >= 2) {
+        if (idJoueurs.size() >= 2) { // J2 Haut-Droite
             plateau[0][6][4] = idJoueurs.get(1);
+            plateau[0][6][0] = 0; // gauche
+            plateau[0][6][3] = 0; // bas
         }
 
-        // J3 (index 2) : Bas-Gauche (6, 0)
-        if (idJoueurs.size() >= 3) {
+        if (idJoueurs.size() >= 3) { // J3 Bas-Gauche
             plateau[6][0][4] = idJoueurs.get(2);
+            plateau[6][0][2] = 0; // droite
+            plateau[6][0][1] = 0; // haut
         }
 
-        // J4 (index 3) : Bas-Droite (6, 6)
-        if (idJoueurs.size() >= 4) {
+        if (idJoueurs.size() >= 4) { // J4 Bas-Droite
             plateau[6][6][4] = idJoueurs.get(3);
+            plateau[6][6][0] = 0; // gauche
+            plateau[6][6][1] = 0; // haut
         }
+
         return plateau;
     }
 
     public static void afficherPlateau(int[][][] plateau) {
         final String MUR = "█";
+        final String PION = "●";
 
         final String[] couleurs = {
-            "\u001B[34m",  // bleu (joueur 1)
-            "\u001B[31m", // rouge (joueur 2)
-            "\u001B[32m", // vert (joueur 3)
-            "\u001B[33m" // jaune (joueur 4)
+                "\u001B[34m",  // bleu (joueur 1)
+                "\u001B[31m",  // rouge (joueur 2)
+                "\u001B[32m",  // vert (joueur 3)
+                "\u001B[33m"   // jaune (joueur 4)
         };
         final String RESET = "\u001B[0m";
-
         final String couleurMur = "\u001B[38;5;94m"; // marron
 
         for (int i = 0; i < 7; i++) {
-            // Ligne du haut de chaque case (3 caractères par case : MUR + (espace|MUR) + MUR)
+            // --- LIGNE HAUT DE LA TUILE (Coins + Mur/Joueur Haut) ---
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR + RESET);
-                if (plateau[i][j][1] == 0)
-                    System.out.print(" ");
-                else
+                System.out.print(couleurMur + MUR + RESET); // Coin haut-gauche (toujours mur)
+
+                // Case HAUT (indice 1)
+                int contenu = plateau[i][j][1];
+                if (contenu >= 2)
+                    System.out.print(couleurs[contenu - 2] + PION + RESET);
+                else if (contenu == 1)
                     System.out.print(couleurMur + MUR + RESET);
-                System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
+
+                System.out.print(couleurMur + MUR + RESET); // Coin haut-droit (toujours mur)
             }
             System.out.println();
 
-            // Ligne centrale (gauche - joueur - droite)
+            // --- LIGNE CENTRALE DE LA TUILE (Gauche | Milieu | Droite) ---
             for (int j = 0; j < 7; j++) {
-                if (plateau[i][j][0] == 0)
-                    System.out.print(" ");
-                else
+                // Case GAUCHE (indice 0)
+                int gauche = plateau[i][j][0];
+                if (gauche >= 2)
+                    System.out.print(couleurs[gauche - 2] + PION + RESET);
+                else if (gauche == 1)
                     System.out.print(couleurMur + MUR + RESET);
-
-                int joueur = plateau[i][j][4]; // position du joueur
-                if (joueur == 0)
-                    System.out.print(" ");
                 else
-                    System.out.print(couleurs[joueur-2] + "●" + RESET);
-
-                if (plateau[i][j][2] == 0)
                     System.out.print(" ");
+
+                // Case MILIEU (indice 4)
+                int milieu = plateau[i][j][4];
+                if (milieu >= 2)
+                    System.out.print(couleurs[milieu - 2] + PION + RESET);
                 else
+                    System.out.print(" ");
+
+                // Case DROITE (indice 2)
+                int droite = plateau[i][j][2];
+                if (droite >= 2)
+                    System.out.print(couleurs[droite - 2] + PION + RESET);
+                else if (droite == 1)
                     System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
             }
             System.out.println();
 
-            // Ligne du bas (même logique que la ligne du haut)
+            // --- LIGNE BAS DE LA TUILE (Coins + Mur/Joueur Bas) ---
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR + RESET);
-                if (plateau[i][j][3] == 0)
-                    System.out.print(" ");
-                else
+                System.out.print(couleurMur + MUR + RESET); // Coin bas-gauche
+
+                // Case BAS (indice 3)
+                int contenu = plateau[i][j][3];
+                if (contenu >= 2)
+                    System.out.print(couleurs[contenu - 2] + PION + RESET);
+                else if (contenu == 1)
                     System.out.print(couleurMur + MUR + RESET);
-                System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
+
+                System.out.print(couleurMur + MUR + RESET); // Coin bas-droit
             }
             System.out.println();
         }
         System.out.println();
     }
 }
-
