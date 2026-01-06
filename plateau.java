@@ -82,7 +82,7 @@ public class Plateau {
             if (scanner.hasNextInt()) {
                 choixType = scanner.nextInt();
             } else {
-                scanner.next(); // vide le buffer en cas d'erreur
+                scanner.next(); // vide l'entrée en cas d'erreur
             }
         }
         boolean estLigne = (choixType == 1);
@@ -110,6 +110,7 @@ public class Plateau {
             } else {
                 scanner.next();
             }
+            System.out.println();
         }
         boolean direction = (choixDir == 1);
 
