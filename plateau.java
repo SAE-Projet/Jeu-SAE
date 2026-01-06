@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.Random;
-
+import java.util.Scanner;
 public class Plateau {
     /*  La fonction creationPlateau initialise un plateau à trois dimensions de taille 7x7 avec 5 positions par tuile.
         1ère dimension -> lignes
@@ -72,46 +72,89 @@ public class Plateau {
     }
 
     public static void faireCoulisser(int[][][] plateau) {
-        Random rdm = new Random();
-        boolean estLigne = rdm.nextBoolean();
-        int indice = rdm.nextInt(7);
-        boolean direction = rdm.nextBoolean();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("--- PHASE DE SÉISME : MODIFICATION DU LABYRINTHE ---");
 
+        // 1. Choix du type : Ligne ou Colonne
+        int choixType = 0;
+        while (choixType != 1 && choixType != 2) {
+            System.out.print("Voulez-vous déplacer une LIGNE (1) ou une COLONNE (2) ? ");
+            if (scanner.hasNextInt()) {
+                choixType = scanner.nextInt();
+            } else {
+                scanner.next(); // vide le buffer en cas d'erreur
+            }
+        }
+        boolean estLigne = (choixType == 1);
+
+        // 2. Choix de l'indice (1 à 7 pour l'utilisateur, 0 à 6 pour le code)
+        int indice = -1;
+        while (indice < 0 || indice > 6) {
+            System.out.print("Entrez le numéro de la " + (estLigne ? "ligne" : "colonne") + " (1 à 7) : ");
+            if (scanner.hasNextInt()) {
+                indice = scanner.nextInt() - 1;
+            } else {
+                scanner.next();
+            }
+        }
+
+        // 3. Choix de la direction
+        int choixDir = 0;
+        String dir1 = estLigne ? "DROITE" : "BAS";
+        String dir2 = estLigne ? "GAUCHE" : "HAUT";
+
+        while (choixDir != 1 && choixDir != 2) {
+            System.out.print("Direction : " + dir1 + " (1) ou " + dir2 + " (2) ? ");
+            if (scanner.hasNextInt()) {
+                choixDir = scanner.nextInt();
+            } else {
+                scanner.next();
+            }
+        }
+        boolean direction = (choixDir == 1);
+
+        // --- EXÉCUTION DU COULISSEMENT (Votre logique reste la même) ---
         int[] temp = new int[5];
 
         if (estLigne) {
-            String sens = direction ? "DROITE" : "GAUCHE";
-            System.out.println("\n>>> SÉISME : Ligne " + (indice + 1) + " vers la " + sens + " <<<");
-
             if (direction) { // VERS LA DROITE
-                for (int k = 0; k < 5; k++) temp[k] = plateau[indice][6][k];
+                for (int k = 0; k < 5; k++)
+                    temp[k] = plateau[indice][6][k];
                 for (int j = 6; j > 0; j--) {
-                    for (int k = 0; k < 5; k++) plateau[indice][j][k] = plateau[indice][j-1][k];
+                    for (int k = 0; k < 5; k++)
+                        plateau[indice][j][k] = plateau[indice][j-1][k];
                 }
-                for (int k = 0; k < 5; k++) plateau[indice][0][k] = temp[k];
+                for (int k = 0; k < 5; k++)
+                    plateau[indice][0][k] = temp[k];
             } else { // VERS LA GAUCHE
-                for (int k = 0; k < 5; k++) temp[k] = plateau[indice][0][k];
+                for (int k = 0; k < 5; k++)
+                    temp[k] = plateau[indice][0][k];
                 for (int j = 0; j < 6; j++) {
-                    for (int k = 0; k < 5; k++) plateau[indice][j][k] = plateau[indice][j+1][k];
+                    for (int k = 0; k < 5; k++)
+                        plateau[indice][j][k] = plateau[indice][j+1][k];
                 }
-                for (int k = 0; k < 5; k++) plateau[indice][6][k] = temp[k];
+                for (int k = 0; k < 5; k++)
+                    plateau[indice][6][k] = temp[k];
             }
         } else {
-            String sens = direction ? "BAS" : "HAUT";
-            System.out.println("\n>>> SÉISME : Colonne " + (indice + 1) + " vers le " + sens + " <<<");
-
             if (direction) { // VERS LE BAS
-                for (int k = 0; k < 5; k++) temp[k] = plateau[6][indice][k];
+                for (int k = 0; k < 5; k++)
+                    temp[k] = plateau[6][indice][k];
                 for (int i = 6; i > 0; i--) {
-                    for (int k = 0; k < 5; k++) plateau[i][indice][k] = plateau[i-1][indice][k];
+                    for (int k = 0; k < 5; k++)
+                        plateau[i][indice][k] = plateau[i-1][indice][k];
                 }
-                for (int k = 0; k < 5; k++) plateau[0][indice][k] = temp[k];
+                for (int k = 0; k < 5; k++)
+                    plateau[0][indice][k] = temp[k];
             } else { // VERS LE HAUT
-                for (int k = 0; k < 5; k++) temp[k] = plateau[0][indice][k];
+                for (int k = 0; k < 5; k++)
+                    temp[k] = plateau[0][indice][k];
                 for (int i = 0; i < 6; i++) {
-                    for (int k = 0; k < 5; k++) plateau[i][indice][k] = plateau[i+1][indice][k];
+                    for (int k = 0; k < 5; k++)
+                        plateau[i][indice][k] = plateau[i+1][indice][k];
                 }
-                for (int k = 0; k < 5; k++) plateau[6][indice][k] = temp[k];
+                for (int k = 0; k < 5; k++)
+                    plateau[6][indice][k] = temp[k];
             }
         }
 
