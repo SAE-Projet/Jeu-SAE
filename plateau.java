@@ -71,6 +71,87 @@ public class Plateau {
         return plateau;
     }
 
+    public static void faireCoulisser(int[][][] plateau) {
+        Random rdm = new Random();
+        boolean estLigne = rdm.nextBoolean();
+        int indice = rdm.nextInt(7);
+        boolean direction = rdm.nextBoolean();
+
+        int[] temp = new int[5];
+
+        if (estLigne) {
+            String sens = direction ? "DROITE" : "GAUCHE";
+            System.out.println("\n>>> SÉISME : Ligne " + (indice + 1) + " vers la " + sens + " <<<");
+
+            if (direction) { // VERS LA DROITE
+                for (int k = 0; k < 5; k++) temp[k] = plateau[indice][6][k];
+                for (int j = 6; j > 0; j--) {
+                    for (int k = 0; k < 5; k++) plateau[indice][j][k] = plateau[indice][j-1][k];
+                }
+                for (int k = 0; k < 5; k++) plateau[indice][0][k] = temp[k];
+            } else { // VERS LA GAUCHE
+                for (int k = 0; k < 5; k++) temp[k] = plateau[indice][0][k];
+                for (int j = 0; j < 6; j++) {
+                    for (int k = 0; k < 5; k++) plateau[indice][j][k] = plateau[indice][j+1][k];
+                }
+                for (int k = 0; k < 5; k++) plateau[indice][6][k] = temp[k];
+            }
+        } else {
+            String sens = direction ? "BAS" : "HAUT";
+            System.out.println("\n>>> SÉISME : Colonne " + (indice + 1) + " vers le " + sens + " <<<");
+
+            if (direction) { // VERS LE BAS
+                for (int k = 0; k < 5; k++) temp[k] = plateau[6][indice][k];
+                for (int i = 6; i > 0; i--) {
+                    for (int k = 0; k < 5; k++) plateau[i][indice][k] = plateau[i-1][indice][k];
+                }
+                for (int k = 0; k < 5; k++) plateau[0][indice][k] = temp[k];
+            } else { // VERS LE HAUT
+                for (int k = 0; k < 5; k++) temp[k] = plateau[0][indice][k];
+                for (int i = 0; i < 6; i++) {
+                    for (int k = 0; k < 5; k++) plateau[i][indice][k] = plateau[i+1][indice][k];
+                }
+                for (int k = 0; k < 5; k++) plateau[6][indice][k] = temp[k];
+            }
+        }
+
+        // --- RÉPARATION AVEC RÉPULSION DES JOUEURS ---
+        for (int k = 0; k < 7; k++) {
+            // 1. BORD HAUT (Ligne 0, position Haut [1])
+            if (plateau[0][k][1] >= 2) {
+                // Si un joueur est sur le bord haut, on le pousse au milieu de sa case
+                plateau[0][k][4] = plateau[0][k][1];
+                plateau[0][k][1] = 1; // On remet le mur
+            } else {
+                plateau[0][k][1] = 1;
+            }
+
+            // 2. BORD BAS (Ligne 6, position Bas [3])
+            if (plateau[6][k][3] >= 2) {
+                plateau[6][k][4] = plateau[6][k][3];
+                plateau[6][k][3] = 1;
+            } else {
+                plateau[6][k][3] = 1;
+            }
+
+            // 3. BORD GAUCHE (Colonne 0, position Gauche [0])
+            if (plateau[k][0][0] >= 2) {
+                plateau[k][0][4] = plateau[k][0][0];
+                plateau[k][0][0] = 1;
+            } else {
+                plateau[k][0][0] = 1;
+            }
+
+            // 4. BORD DROIT (Colonne 6, position Droite [2])
+            if (plateau[k][6][2] >= 2) {
+                plateau[k][6][4] = plateau[k][6][2];
+                plateau[k][6][2] = 1;
+            } else {
+                plateau[k][6][2] = 1;
+            }
+        }
+    }
+
     public static void afficherPlateau(int[][][] plateau) {
         final String MUR = "█";
         final String PION = "●";
