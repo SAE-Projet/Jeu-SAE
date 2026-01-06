@@ -89,9 +89,8 @@ public class MoteurJeu {
 
         while (true) {
             int idJoueur = idJoueurs.get(joueurCourant);
-
             System.out.println("Tour du joueur " + pseudos.get(joueurCourant));
-            tour(plateau, idJoueur);
+            tour(plateau, scores, couleurs, idJoueur, nbJoueurs, pseudos);
             System.out.println("Le plateau tremble...");
             Plateau.faireCoulisser(plateau);
             Plateau.afficherPlateau(plateau);
@@ -116,113 +115,135 @@ public class MoteurJeu {
         return null;
     }
 
-    public static void tour(int[][][] tab, int idJoueur) {
+    public static void tour(int[][][] tab, ArrayList<Integer> scores, String[] couleurs, int idJoueur, int nbJoueurs, ArrayList<String> pseudos) {
         Scanner scanner = new Scanner(System.in);
         int pasRestants = lancerDé();
+        final String RESET = "\u001B[0m";
+        boolean stop = false;
 
-        while (pasRestants > 0) {
+        while (pasRestants > 0 && !stop) {
             int[] pos = trouverJoueur(tab, idJoueur);
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
+            int x = pos[0], y = pos[1], z = pos[2];
+            String choix;
 
-            System.out.println("Il vous reste " + pasRestants + " pas");
-            System.out.print("Direction ? (g, d, h, b) : ");
-            String direction = scanner.nextLine();
-
-            boolean deplacementOK = false;
-            int nx = x, ny = y, nz = z;
-
-            // --- BAS ---
-            if (direction.equalsIgnoreCase("b")) {
-                if (z == 1) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord haut -> Milieu
-
-                else if (z == 4 && tab[x][y][3] == 0) {
-                    nz = 3;
-                    deplacementOK = true;
-                } // Milieu -> Bord bas
-
-                else if (z == 3 && x < 6) { // Déjà sur le bord bas -> Changement de case
-                    if (tab[x+1][y][1] == 0) {
-                        nx = x + 1;
-                        nz = 1;
-                        deplacementOK = true;
-                    }
-                }
+            do {
+                System.out.println("Il vous reste " + pasRestants + " pas. Voulez-vous vous arrêter ? o/n");
+                choix = scanner.nextLine();
+            } while (!choix.equalsIgnoreCase("o") && !choix.equalsIgnoreCase("n"));
+            if(choix.equalsIgnoreCase("o")) {
+                do {
+                    System.out.println("Etes-vous sûr de vouloir abandonner vos " + pasRestants + " pas restants ? o/n");
+                    choix = scanner.nextLine();
+                } while (!choix.equalsIgnoreCase("o") && !choix.equalsIgnoreCase("n"));
+                if (choix.equalsIgnoreCase("o"))
+                    stop = true;
             }
+            if(!stop) {
+                System.out.print("Direction ? (g, d, h, b) : ");
+                String direction = scanner.nextLine();
 
-            // --- HAUT ---
-            else if (direction.equalsIgnoreCase("h")) {
-                if (z == 3) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord bas -> Milieu
+                boolean deplacementOK = false;
+                int nx = x, ny = y, nz = z;
 
-                else if (z == 4 && tab[x][y][1] == 0) {
-                    nz = 1;
-                    deplacementOK = true;
-                } // Milieu -> Bord haut
+                // --- BAS ---
+                if (direction.equalsIgnoreCase("b")) {
+                    if (z == 1) {
+                        nz = 4;
+                        deplacementOK = true;
+                    } // Bord haut -> Milieu
 
-                else if (z == 1 && x > 0) { // Déjà sur le bord haut -> Changement de case
-                    if (tab[x-1][y][3] == 0) {
-                        nx = x - 1;
+                    else if (z == 4 && tab[x][y][3] == 0) {
                         nz = 3;
                         deplacementOK = true;
+                    } // Milieu -> Bord bas
+
+                    else if (z == 3 && x < 6) { // Déjà sur le bord bas -> Changement de case
+                        if (tab[x + 1][y][1] == 0) {
+                            nx = x + 1;
+                            nz = 1;
+                            deplacementOK = true;
+                        }
                     }
                 }
-            }
 
-            // --- DROITE ---
-            else if (direction.equalsIgnoreCase("d")) {
-                if (z == 0) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord gauche -> Milieu
-
-                else if (z == 4 && tab[x][y][2] == 0) {
-                    nz = 2;
-                    deplacementOK = true; } // Milieu -> Bord droit
-
-                else if (z == 2 && y < 6) { // Déjà sur le bord droit -> Changement de case
-                    if (tab[x][y+1][0] == 0) {
-                        ny = y + 1;
-                        nz = 0;
+                // --- HAUT ---
+                else if (direction.equalsIgnoreCase("h")) {
+                    if (z == 3) {
+                        nz = 4;
                         deplacementOK = true;
+                    } // Bord bas -> Milieu
+
+                    else if (z == 4 && tab[x][y][1] == 0) {
+                        nz = 1;
+                        deplacementOK = true;
+                    } // Milieu -> Bord haut
+
+                    else if (z == 1 && x > 0) { // Déjà sur le bord haut -> Changement de case
+                        if (tab[x - 1][y][3] == 0) {
+                            nx = x - 1;
+                            nz = 3;
+                            deplacementOK = true;
+                        }
                     }
                 }
-            }
 
-            // --- GAUCHE ---
-            else if (direction.equalsIgnoreCase("g")) {
-                if (z == 2) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord droit -> Milieu
+                // --- DROITE ---
+                else if (direction.equalsIgnoreCase("d")) {
+                    if (z == 0) {
+                        nz = 4;
+                        deplacementOK = true;
+                    } // Bord gauche -> Milieu
 
-                else if (z == 4 && tab[x][y][0] == 0) {
-                    nz = 0;
-                    deplacementOK = true;
-                } // Milieu -> Bord gauche
-
-                else if (z == 0 && y > 0) { // Déjà sur le bord gauche -> Changement de case
-                    if (tab[x][y-1][2] == 0) {
-                        ny = y - 1;
+                    else if (z == 4 && tab[x][y][2] == 0) {
                         nz = 2;
                         deplacementOK = true;
+                    } // Milieu -> Bord droit
+
+                    else if (z == 2 && y < 6) { // Déjà sur le bord droit -> Changement de case
+                        if (tab[x][y + 1][0] == 0) {
+                            ny = y + 1;
+                            nz = 0;
+                            deplacementOK = true;
+                        }
                     }
                 }
-            }
 
-            if (deplacementOK) {
-                tab[x][y][z] = 0;
-                tab[nx][ny][nz] = idJoueur;
-                pasRestants--;
-                Plateau.afficherPlateau(tab);
-            } else {
-                System.out.println("Déplacement impossible !");
+                // --- GAUCHE ---
+                else if (direction.equalsIgnoreCase("g")) {
+                    if (z == 2) {
+                        nz = 4;
+                        deplacementOK = true;
+                    } // Bord droit -> Milieu
+
+                    else if (z == 4 && tab[x][y][0] == 0) {
+                        nz = 0;
+                        deplacementOK = true;
+                    } // Milieu -> Bord gauche
+
+                    else if (z == 0 && y > 0) { // Déjà sur le bord gauche -> Changement de case
+                        if (tab[x][y - 1][2] == 0) {
+                            ny = y - 1;
+                            nz = 2;
+                            deplacementOK = true;
+                        }
+                    }
+                }
+
+                if (deplacementOK) {
+                    tab[x][y][z] = 0;
+                    tab[nx][ny][nz] = idJoueur;
+                    pasRestants--;
+
+                    System.out.println();
+                    for (int i = 0; i < nbJoueurs; i++) {
+                        System.out.print(couleurs[i] + "● " + RESET);
+                        System.out.println("Score " + pseudos.get(i) + " : " + scores.get(i));
+                    }
+                    System.out.println();
+                    Plateau.afficherPlateau(tab);
+                } else {
+                    System.out.println("Déplacement impossible !");
+                }
             }
         }
     }
