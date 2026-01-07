@@ -54,11 +54,11 @@ public class MoteurJeu {
         }
         System.out.println();
 
-        // Jfais une liste avec tous les items, check la classe items pr voir tous les objets que y a
+        // Liste où jmets tous les id du tableau symboles pour mélanger ensuite
 
         ArrayList<Integer> listeItems = new ArrayList<>();
 
-        for (int i = -2; i >= -25; i--) {
+        for (int i = 0; i < 24; i++) {
             listeItems.add(i);
         }
         Collections.shuffle(listeItems);
@@ -72,18 +72,15 @@ public class MoteurJeu {
 
         for (int i = 0; i < nbJoueurs; i++) {
             ArrayList<Integer> itemsARecup = new ArrayList<>();
-
-            // Ça récup les 3 items dans la liste mélangée)
-            itemsARecup.add(listeItems.get(indItem++));
-            itemsARecup.add(listeItems.get(indItem++));
-            itemsARecup.add(listeItems.get(indItem++));
-
+            for (int j = 0; j < 4; j++) {
+                // Ça récup les 3 items dans la liste mélangée
+                itemsARecup.add(listeItems.get(indItem++));
+            }
             // on donne les 3 items au premier joueur puis on enchaîne avc les suivants
-
             itemsJoueurs.add(itemsARecup);
         }
 
-        int[][][] plateau = Plateau.creationPlateau(idJoueurs);
+        int[][][] plateau = Plateau.creationPlateau(idJoueurs, itemsJoueurs);
         Plateau.afficherPlateau(plateau);
         int joueurCourant = 0;
 
