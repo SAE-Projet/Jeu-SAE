@@ -1,33 +1,30 @@
 public class Items {
-    // Codes couleurs ANSI personnalisés
-    public static final String VIOLET = "\u001B[35m";
-    public static final String NOIR   = "\u001B[30;1m"; // Gris foncé / Noir brillant
-    public static final String BLANC  = "\u001B[37m";
-    public static final String CYAN   = "\u001B[36m";
-    public static final String ROSE   = "\u001B[38;5;205m";
-    public static final String ORANGE = "\u001B[38;5;208m";
-    public static final String RESET  = "\u001B[0m";
+    public static final String VIOLET     = "\u001B[35m";
+    public static final String VERT       = "\u001B[32m";
+    public static final String ROUGE      = "\u001B[31m";
+    public static final String CYAN       = "\u001B[36m";
+    public static final String ROSE       = "\u001B[38;5;205m";
+    public static final String ORANGE     = "\u001B[38;5;208m";
+    public static final String RESET      = "\u001B[0m";
 
-    // Les 4 formes choisies pour leur stabilité d'affichage
-    private static final String[] FORMES = {"★", "♦", "●", "♠"};
+    private static final String[] FORMES = {"★", "♦", "▲", "♠"};
 
-    // Génération automatique des 24 items (6 couleurs x 4 formes)
+    // 6 couleurs x 4 formes = 24 items
     public static final String[] SYMBOLES = {
-            VIOLET+FORMES[0], VIOLET+FORMES[1], VIOLET+FORMES[2], VIOLET+FORMES[3],
-            NOIR+FORMES[0],   NOIR+FORMES[1],   NOIR+FORMES[2],   NOIR+FORMES[3],
-            BLANC+FORMES[0],  BLANC+FORMES[1],  BLANC+FORMES[2],  BLANC+FORMES[3],
-            CYAN+FORMES[0],   CYAN+FORMES[1],   CYAN+FORMES[2],   CYAN+FORMES[3],
-            ROSE+FORMES[0],   ROSE+FORMES[1],   ROSE+FORMES[2],   ROSE+FORMES[3],
-            ORANGE+FORMES[0], ORANGE+FORMES[1], ORANGE+FORMES[2], ORANGE+FORMES[3]
+            VIOLET+FORMES[0]+RESET,     VIOLET+FORMES[1]+RESET,     VIOLET+FORMES[2]+RESET,     VIOLET+FORMES[3]+RESET,
+            VERT+FORMES[0]+RESET,       VERT+FORMES[1]+RESET,       VERT+FORMES[2]+RESET,       VERT+FORMES[3]+RESET,
+            ROUGE+FORMES[0]+RESET,      ROUGE+FORMES[1]+RESET,      ROUGE+FORMES[2]+RESET,      ROUGE+FORMES[3]+RESET,
+            CYAN+FORMES[0]+RESET,       CYAN+FORMES[1]+RESET,       CYAN+FORMES[2]+RESET,       CYAN+FORMES[3]+RESET,
+            ROSE+FORMES[0]+RESET,       ROSE+FORMES[1]+RESET,       ROSE+FORMES[2]+RESET,       ROSE+FORMES[3]+RESET,
+            ORANGE+FORMES[0]+RESET,     ORANGE+FORMES[1]+RESET,     ORANGE+FORMES[2]+RESET,     ORANGE+FORMES[3]+RESET
     };
 
-    // Noms correspondants pour l'affichage des objectifs
     public static final String[] NOMS = {
-            "Étoile Nebula", "Améthyste", "Orbe pourpre", "Pique galaxy",
-            "Étoile du Chaos", "Onyx", "Orbe du néant", "Pique obscur",
-            "Étoile Céleste", "Quartz", "Orbe lumineux", "Pique d'ivoire",
-            "Étoile Givrée", "Cyanite", "Orbe de glace", "Pique d'azur",
-            "Étoile Filante", "Rhodonite", "Orbe rosé", "Pique bonbon",
-            "Étoile Solaire", "Topaze", "Orbe enflammé", "Pique de cuivre"
+            "Étoile Nebula", "Améthyste", "Pyramide pourpre", "Pique galaxy",
+            "Étoile Emeraude", "Jade", "Pyramide sylvestre", "Pique de ronce",
+            "Étoile d'Azur", "Saphir", "Pyramide marin", "Pique abyssal",
+            "Étoile Givrée", "Cyanite", "Pyramide de glace", "Pique de givre",
+            "Étoile Filante", "Rhodonite", "Pyramide rosé", "Pique bonbon",
+            "Étoile Solaire", "Topaze", "Pyramide enflammé", "Pique de cuivre"
     };
 }
