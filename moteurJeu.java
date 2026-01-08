@@ -5,14 +5,10 @@ import java.util.Collections;
 
 public class MoteurJeu {
     public static boolean dejaPris(ArrayList<String> pseudos, String pseudo){
-        // On parcourt tous les pseudos déjà pris
-        for (int i = 0; i < pseudos.size(); i++) {
-            // On compare avec le nouveau pseudo
-            if (pseudos.get(i).equalsIgnoreCase(pseudo)) {
-                return true; // Le pseudo est déjà pris
-            }
+        for (String p : pseudos) {
+            if (p.equalsIgnoreCase(pseudo))
+                return true;
         }
-        // Le pseudo n'est pas encore pris
         return false;
     }
 
@@ -24,32 +20,15 @@ public class MoteurJeu {
                 "\u001B[33m" // jaune (joueur 4)
         };
 
-        final String RESET = "\u001B[0m"; // couleur du terminal
+        final String RESET = "\u001B[0m";
         Scanner scanner = new Scanner(System.in);
         int nbJoueurs;
-        // Création des listes des pseudos, des ID des joueurs, et de leur pseudo
         ArrayList<String> pseudos = new ArrayList<>();
         ArrayList<Integer> idJoueurs = new ArrayList<>();
         ArrayList<Integer> scores = new ArrayList<>();
         String pseudo;
-        System.out.println("===== Règles du jeu ===== \nCe jeu se joue entre 2 et 4 joueurs.\n" +
-                "Le but du jeu est de ramasser ses 3 objets avant que les autres ne ramassent les leurs.\n" +
-                "Vous pourrez vous déplacer d'un certain nombre de pas en fonction de vos lancers de dé.\n" +
-                "Un petit conseil : Faites attention aux séismes... utilisez-les à votre avantage ! \uD83D\uDE0A");
-        String valideRegles;
-        // Vérificiation de lecture des règles
-        System.out.print("Avez-vous bien lu et compris les règles ?\n" +
-            "Êtes-vous prêt à jouer et affronter vos adversaires dans une bataille au coeur du labyrinthe !? o/n : ");
-        valideRegles = scanner.nextLine();
-        while(!valideRegles.equalsIgnoreCase("o")){
-            if(valideRegles.equalsIgnoreCase("n"))
-                System.out.print("Alors veuillez relire les règles et entrez 'o' lorsque vous serez prêt : ");
-            else
-                System.out.print("Veuillez entrer soit 'o' pour oui, ou soit 'n' pour non :  ");
-            valideRegles = scanner.nextLine();
-        }
         do {
-            System.out.print("Super alors commençons !\nCombien êtes-vous de joueurs ? ( Entre 2 et 4 joueurs ) - ");
+            System.out.print("Combien êtes-vous de joueurs ? ( Entre 2 et 4 joueurs ) - ");
             nbJoueurs = scanner.nextInt();
         } while(nbJoueurs < 2 || nbJoueurs > 4);
         scanner.nextLine();
@@ -101,7 +80,7 @@ public class MoteurJeu {
             itemsJoueurs.add(itemsARecup);
         }
 
-        int[][][] plateau = Plateau.creationPlateau(idJoueurs);
+        int[][][] plateau = Plateau.creationPlateau(idJoueurs, itemsJoueurs);
         Plateau.afficherPlateau(plateau);
         int joueurCourant = 0;
 
@@ -140,137 +119,129 @@ public class MoteurJeu {
         boolean stop = false;
 
         while (pasRestants > 0 && !stop) {
-            boolean stopAnnule = false;
             int[] pos = trouverJoueur(tab, idJoueur);
             int x = pos[0], y = pos[1], z = pos[2];
             String choix;
-            boolean deplacementOK = false;
-            int nx = x, ny = y, nz = z;
 
-            System.out.print("Il vous reste " + pasRestants + " pas. Direction ? (g, d, h, b) \nSi vous voulez vous arrêter ici, veuillez entrer 'q' : ");
-            String direction = scanner.nextLine();
-
-            // --- ARRÊT ---
-            if (direction.equalsIgnoreCase("q")) {
+            do {
+                System.out.println("Il vous reste " + pasRestants + " pas. Voulez-vous vous arrêter ? o/n");
+                choix = scanner.nextLine();
+            } while (!choix.equalsIgnoreCase("o") && !choix.equalsIgnoreCase("n"));
+            if(choix.equalsIgnoreCase("o")) {
                 do {
-                    System.out.print("Etes-vous sûr de vouloir abandonner vos " + pasRestants + " pas restants ? o/n : ");
+                    System.out.println("Etes-vous sûr de vouloir abandonner vos " + pasRestants + " pas restants ? o/n");
                     choix = scanner.nextLine();
                 } while (!choix.equalsIgnoreCase("o") && !choix.equalsIgnoreCase("n"));
                 if (choix.equalsIgnoreCase("o"))
                     stop = true;
-                else
-                    stopAnnule = true;
             }
+            if(!stop) {
+                System.out.print("Direction ? (g, d, h, b) : ");
+                String direction = scanner.nextLine();
 
-            // --- BAS ---
-            else if (direction.equalsIgnoreCase("b")) {
-                if (z == 1) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord haut -> Milieu
+                boolean deplacementOK = false;
+                int nx = x, ny = y, nz = z;
 
-                else if (z == 4 && tab[x][y][3] == 0) {
-                    nz = 3;
-                    deplacementOK = true;
-                } // Milieu -> Bord bas
-
-                else if (z == 3 && x < 6) { // Déjà sur le bord bas -> Changement de case
-                    if (tab[x+1][y][1] == 0) {
-                        nx = x+1;
-                        nz = 1;
+                // --- BAS ---
+                if (direction.equalsIgnoreCase("b")) {
+                    if (z == 1) {
+                        nz = 4;
                         deplacementOK = true;
-                    }
-                }
-            }
+                    } // Bord haut -> Milieu
 
-            // --- HAUT ---
-            else if (direction.equalsIgnoreCase("h")) {
-                if (z == 3) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord bas -> Milieu
-
-                else if (z == 4 && tab[x][y][1] == 0) {
-                    nz = 1;
-                    deplacementOK = true;
-                } // Milieu -> Bord haut
-
-                else if (z == 1 && x > 0) { // Déjà sur le bord haut -> Changement de case
-                    if (tab[x-1][y][3] == 0) {
-                        nx = x-1;
+                    else if (z == 4 && tab[x][y][3] == 0) {
                         nz = 3;
                         deplacementOK = true;
+                    } // Milieu -> Bord bas
+
+                    else if (z == 3 && x < 6) { // Déjà sur le bord bas -> Changement de case
+                        if (tab[x + 1][y][1] == 0) {
+                            nx = x + 1;
+                            nz = 1;
+                            deplacementOK = true;
+                        }
                     }
                 }
-            }
 
-            // --- DROITE ---
-            else if (direction.equalsIgnoreCase("d")) {
-                if (z == 0) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord gauche -> Milieu
-
-                else if (z == 4 && tab[x][y][2] == 0) {
-                    nz = 2;
-                    deplacementOK = true;
-                } // Milieu -> Bord droit
-
-                else if (z == 2 && y < 6) { // Déjà sur le bord droit -> Changement de case
-                    if (tab[x][y+1][0] == 0) {
-                        ny = y+1;
-                        nz = 0;
+                // --- HAUT ---
+                else if (direction.equalsIgnoreCase("h")) {
+                    if (z == 3) {
+                        nz = 4;
                         deplacementOK = true;
+                    } // Bord bas -> Milieu
+
+                    else if (z == 4 && tab[x][y][1] == 0) {
+                        nz = 1;
+                        deplacementOK = true;
+                    } // Milieu -> Bord haut
+
+                    else if (z == 1 && x > 0) { // Déjà sur le bord haut -> Changement de case
+                        if (tab[x - 1][y][3] == 0) {
+                            nx = x - 1;
+                            nz = 3;
+                            deplacementOK = true;
+                        }
                     }
                 }
-            }
 
-            // --- GAUCHE ---
-            else if (direction.equalsIgnoreCase("g")) {
-                if (z == 2) {
-                    nz = 4;
-                    deplacementOK = true;
-                } // Bord droit -> Milieu
+                // --- DROITE ---
+                else if (direction.equalsIgnoreCase("d")) {
+                    if (z == 0) {
+                        nz = 4;
+                        deplacementOK = true;
+                    } // Bord gauche -> Milieu
 
-                else if (z == 4 && tab[x][y][0] == 0) {
-                    nz = 0;
-                    deplacementOK = true;
-                } // Milieu -> Bord gauche
-
-                else if (z == 0 && y > 0) { // Déjà sur le bord gauche -> Changement de case
-                    if (tab[x][y-1][2] == 0) {
-                        ny = y-1;
+                    else if (z == 4 && tab[x][y][2] == 0) {
                         nz = 2;
                         deplacementOK = true;
+                    } // Milieu -> Bord droit
+
+                    else if (z == 2 && y < 6) { // Déjà sur le bord droit -> Changement de case
+                        if (tab[x][y + 1][0] == 0) {
+                            ny = y + 1;
+                            nz = 0;
+                            deplacementOK = true;
+                        }
                     }
                 }
+
+                // --- GAUCHE ---
+                else if (direction.equalsIgnoreCase("g")) {
+                    if (z == 2) {
+                        nz = 4;
+                        deplacementOK = true;
+                    } // Bord droit -> Milieu
+
+                    else if (z == 4 && tab[x][y][0] == 0) {
+                        nz = 0;
+                        deplacementOK = true;
+                    } // Milieu -> Bord gauche
+
+                    else if (z == 0 && y > 0) { // Déjà sur le bord gauche -> Changement de case
+                        if (tab[x][y - 1][2] == 0) {
+                            ny = y - 1;
+                            nz = 2;
+                            deplacementOK = true;
+                        }
+                    }
+                }
+
+                if (deplacementOK) {
+                    tab[x][y][z] = 0;
+                    tab[nx][ny][nz] = idJoueur;
+                    pasRestants--;
+
+                    System.out.println();
+                    for (int i = 0; i < nbJoueurs; i++) {
+                        System.out.print(couleurs[i] + "● " + RESET);
+                        System.out.println("Score " + pseudos.get(i) + " : " + scores.get(i));
+                    }
+                    System.out.println();
+                    Plateau.afficherPlateau(tab);
+                } else {
+                    System.out.println("Déplacement impossible !");
+                }
             }
-
-            if (deplacementOK) {
-                tab[x][y][z] = 0;
-                tab[nx][ny][nz] = idJoueur;
-                pasRestants--;
-
-                System.out.println();
-                for (int i = 0; i < nbJoueurs; i++) {
-                    System.out.print(couleurs[i] + "● " + RESET);
-                    System.out.println("Score " + pseudos.get(i) + " : " + scores.get(i));
-                }
-                System.out.println();
-                Plateau.afficherPlateau(tab);
-            } else if (stopAnnule){
-                System.out.println();
-                for (int i = 0; i < nbJoueurs; i++) {
-                    System.out.print(couleurs[i] + "● " + RESET);
-                    System.out.println("Score " + pseudos.get(i) + " : " + scores.get(i));
-                }
-                System.out.println();
-                Plateau.afficherPlateau(tab);
-                System.out.println(pseudos.get(idJoueur-2) + " a renoncer à s'arrêter. Veuillez rejouer s'il vous plaît.");
-            } else if (stop)
-                System.out.println(pseudos.get(idJoueur-2) + " a décidé de s'arrêter ici !");
-            else
-                System.out.println("Déplacement impossible !");
         }
     }
 
