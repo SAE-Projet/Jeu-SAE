@@ -21,25 +21,57 @@ public class Plateau {
             }
         }
 
-        // Génération cohérente des murs
+        // Initialisation : tout fermé par défaut
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                for (int k = 0; k < 5; k++) {
+                    plateau[i][j][k] = 1;
+                }
+                plateau[i][j][4] = 0;
+            }
+        }
+
+        // Génération avec probabilité réduite (environ 25% de murs)
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
 
-                // GAUCHE
-                if (j == 0) plateau[i][j][0] = 1;
-                else plateau[i][j][0] = plateau[i][j - 1][2];
+                // GAUCHE : Cohérence avec le voisin de gauche
+                if (j == 0) {
+                    plateau[i][j][0] = 1;
+                } else {
+                    plateau[i][j][0] = plateau[i][j - 1][2];
+                }
 
-                // HAUT
-                if (i == 0) plateau[i][j][1] = 1;
-                else plateau[i][j][1] = plateau[i - 1][j][3];
+                // HAUT : Cohérence avec le voisin du haut
+                if (i == 0) {
+                    plateau[i][j][1] = 1;
+                } else {
+                    plateau[i][j][1] = plateau[i - 1][j][3];
+                }
 
-                // DROITE
-                if (j == 6) plateau[i][j][2] = 1;
-                else plateau[i][j][2] = rdm.nextInt(2);
+                // DROITE : 25% de chance d'avoir un mur
+                if (j == 6) {
+                    plateau[i][j][2] = 1;
+                } else {
+                    float chanceMur = rdm.nextFloat();
+                    if (chanceMur < 0.25f) {
+                        plateau[i][j][2] = 1;
+                    } else {
+                        plateau[i][j][2] = 0;
+                    }
+                }
 
-                // BAS
-                if (i == 6) plateau[i][j][3] = 1;
-                else plateau[i][j][3] = rdm.nextInt(2);
+                // BAS : 25% de chance d'avoir un mur
+                if (i == 6) {
+                    plateau[i][j][3] = 1;
+                } else {
+                    float chanceMur = rdm.nextFloat();
+                    if (chanceMur < 0.25f) {
+                        plateau[i][j][3] = 1;
+                    } else {
+                        plateau[i][j][3] = 0;
+                    }
+                }
             }
         }
 
@@ -77,16 +109,18 @@ public class Plateau {
                     int itemLigne = rdm.nextInt(7);
                     int itemColonne = rdm.nextInt(7);
 
-                    // pour rappel on fait spawn aucun item sur les deux lignes les plus proches des joueurs
                     boolean zoneValide = false;
-                    if (i < 2 && itemLigne >= 2) {
-                        zoneValide = true;
-                    } else if (i > 2 && itemLigne <= 4) {
-                        zoneValide = true;
+                    // Joueurs 1 et 2 (Haut) : on évite les lignes 0 et 1
+                    if (i < 2) {
+                        if (itemLigne >= 2) zoneValide = true;
+                    }
+                    // Joueurs 3 et 4 (Bas) : on évite les lignes 5 et 6
+                    else {
+                        if (itemLigne <= 4) zoneValide = true;
                     }
 
                     if (zoneValide && plateau[itemLigne][itemColonne][4] == 0) {
-                        plateau[itemLigne][itemColonne][4] = -(itemID + 10); // items vont de -10 à -33
+                        plateau[itemLigne][itemColonne][4] = -(itemID + 10);
                         position = true;
                     }
                 }
