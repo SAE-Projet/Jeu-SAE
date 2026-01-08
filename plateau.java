@@ -7,7 +7,7 @@ public class Plateau {
         2ème dimension -> colonnes
         3ème dimension -> cases ( 0 = gauche , 1 = haut , 2 = droite , 3 = bas , 4 = milieu )
      */
-    public static int[][][] creationPlateau(ArrayList<Integer> idJoueurs) {
+    public static int[][][] creationPlateau(ArrayList<Integer> idJoueurs, ArrayList<ArrayList<Integer>> itemsJoueurs) {
         Random rdm = new Random();
         int[][][] plateau = new int[7][7][5];
 
@@ -68,6 +68,30 @@ public class Plateau {
             plateau[6][6][1] = 0; // haut
         }
 
+        // faire spawn les items
+        for (int i = 0; i < idJoueurs.size(); i++) {
+            ArrayList<Integer> ItemsParJoueur = itemsJoueurs.get(i);
+            for (Integer itemID : ItemsParJoueur) {
+                boolean position = false;
+                while (!position) {
+                    int itemLigne = rdm.nextInt(7);
+                    int itemColonne = rdm.nextInt(7);
+
+                    // pr rappel on fait spawn aucun item sur les deux lignes les plus proches des joueurs
+                    boolean zoneValide = false;
+                    if (i < 2 && itemLigne >= 2) {
+                        zoneValide = true;
+                    } else if (i > 2 && itemLigne <= 4) {
+                        zoneValide = true;
+                    }
+
+                    if (zoneValide && plateau[itemLigne][itemColonne][4] == 0) {
+                        plateau[itemLigne][itemColonne][4] = -(itemID + 10); // items vont de -10 à -33
+                        position = true;
+                    }
+                }
+            }
+        }
         return plateau;
     }
 
@@ -242,6 +266,10 @@ public class Plateau {
                 int milieu = plateau[i][j][4];
                 if (milieu >= 2)
                     System.out.print(couleurs[milieu - 2] + PION + RESET);
+                else if (milieu <= -10) {
+                    int idItem = Math.abs(milieu) - 10;
+                    System.out.print(Items.SYMBOLES[idItem] + RESET);
+                }
                 else
                     System.out.print(" ");
 
