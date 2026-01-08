@@ -1,35 +1,33 @@
 public class Items {
+    // Codes couleurs ANSI personnalisés
+    public static final String VIOLET = "\u001B[35m";
+    public static final String NOIR   = "\u001B[30;1m"; // Gris foncé / Noir brillant
+    public static final String BLANC  = "\u001B[37m";
+    public static final String CYAN   = "\u001B[36m";
+    public static final String ROSE   = "\u001B[38;5;205m";
+    public static final String ORANGE = "\u001B[38;5;208m";
+    public static final String RESET  = "\u001B[0m";
 
-    // Initialisation des objets (S)
-    public static final int TOMATE = -2;
-    public static final int ORANGE = -3;
-    public static final int BANANE = -4;
-    public static final int MAIS = -5;
-    public static final int POIRE = -6;
-    public static final int KIWI = -7;
-    public static final int MYRTILLE = -8;
-    public static final int RAISIN = -9;
-    public static final int COCONUT = -10;
-    public static final int CHAMPIGNON = -11;
-    public static final int CROISSANT = -12;
-    public static final int FROMAGE = -13;
-    public static final int VIANDE = -14;
-    public static final int BURGIR = -15;
-    public static final int FRITES = -16;
-    public static final int PIZZA = -17;
-    public static final int SALADE = -18;
-    public static final int RAMEN = -19;
-    public static final int CREVETTE = -20;
-    public static final int ONIGIRI = -21;
-    public static final int CUPCAKE = -22;
-    public static final int DONUT = -23;
-    public static final int JUS = -24;
-    public static final int BIERE = -25;
+    // Les 4 formes choisies pour leur stabilité d'affichage
+    private static final String[] FORMES = {"★", "♦", "●", "♠"};
 
-    // Affichage des objets avec des emojis (S)
-    public static final String[] EMOJIS = {"\uD83C\uDF45", "\uD83C\uDF4A", "\uD83C\uDF4C", "\uD83C\uDF3D", "\uD83C\uDF50",
-            "\uD83E\uDD5D", "\uD83E\uDED0", "\uD83C\uDF47", "\uD83E\uDD65", "\uD83C\uDF44", "\uD83E\uDD50", "\uD83E\uDDC0",
-            "\uD83C\uDF56", "\uD83C\uDF54", "\uD83C\uDF5F", "\uD83C\uDF55", "\uD83E\uDD57", "\uD83C\uDF5C", "\uD83C\uDF64",
-            "\uD83C\uDF59", "\uD83E\uDDC1", "\uD83C\uDF69", "\uD83E\uDDC3", "\uD83C\uDF7A"};
+    // Génération automatique des 24 items (6 couleurs x 4 formes)
+    public static final String[] SYMBOLES = {
+            VIOLET+FORMES[0], VIOLET+FORMES[1], VIOLET+FORMES[2], VIOLET+FORMES[3],
+            NOIR+FORMES[0],   NOIR+FORMES[1],   NOIR+FORMES[2],   NOIR+FORMES[3],
+            BLANC+FORMES[0],  BLANC+FORMES[1],  BLANC+FORMES[2],  BLANC+FORMES[3],
+            CYAN+FORMES[0],   CYAN+FORMES[1],   CYAN+FORMES[2],   CYAN+FORMES[3],
+            ROSE+FORMES[0],   ROSE+FORMES[1],   ROSE+FORMES[2],   ROSE+FORMES[3],
+            ORANGE+FORMES[0], ORANGE+FORMES[1], ORANGE+FORMES[2], ORANGE+FORMES[3]
+    };
 
+    // Noms correspondants pour l'affichage des objectifs
+    public static final String[] NOMS = {
+            "Étoile Nebula", "Améthyste", "Orbe pourpre", "Pique galaxy",
+            "Étoile du Chaos", "Onyx", "Orbe du néant", "Pique obscur",
+            "Étoile Céleste", "Quartz", "Orbe lumineux", "Pique d'ivoire",
+            "Étoile Givrée", "Cyanite", "Orbe de glace", "Pique d'azur",
+            "Étoile Filante", "Rhodonite", "Orbe rosé", "Pique bonbon",
+            "Étoile Solaire", "Topaze", "Orbe enflammé", "Pique de cuivre"
+    };
 }
