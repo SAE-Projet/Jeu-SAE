@@ -77,7 +77,7 @@ public class Plateau {
                     int itemLigne = rdm.nextInt(7);
                     int itemColonne = rdm.nextInt(7);
 
-                    // pr rappel on fait spawn aucun item sur les deux lignes les plus proches des joueurs
+                    // pour rappel on fait spawn aucun item sur les deux lignes les plus proches des joueurs
                     boolean zoneValide = false;
                     if (i < 2 && itemLigne >= 2) {
                         zoneValide = true;
