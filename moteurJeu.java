@@ -6,9 +6,9 @@ import java.util.Collections;
 public class MoteurJeu {
     public static boolean dejaPris(ArrayList<String> pseudos, String pseudo){
         // On parcourt tous les pseudos déjà pris
-        for (int i = 0; i < pseudos.size(); i++) {
+        for (String s : pseudos) {
             // On compare avec le nouveau pseudo
-            if (pseudos.get(i).equalsIgnoreCase(pseudo)) {
+            if (s.equalsIgnoreCase(pseudo)) {
                 return true; // Le pseudo est déjà pris
             }
         }
@@ -24,6 +24,7 @@ public class MoteurJeu {
                 "\u001B[33m" // jaune (joueur 4)
         };
 
+        final String couleurGagnant = "\u001B[38;5;214m";
         final String RESET = "\u001B[0m"; // couleur du terminal
         Scanner scanner = new Scanner(System.in);
         int nbJoueurs;
@@ -62,7 +63,7 @@ public class MoteurJeu {
                     System.out.println("Ce pseudo est déjà pris.");
                 if (pseudo.length() < 3)
                     System.out.println("Pseudo trop court !");
-            } while (pseudo.length() < 3 || dejaPris(pseudos, pseudo)); // vérifie que le pseudo n'est pas déjà pris, et qu'il soit de plus de 3 caractères
+            } while (pseudo.length() < 3 || dejaPris(pseudos, pseudo)); // vérifie que le pseudo n'est pas déjà pris, et qu'il ait plus de 3 caractères
             pseudos.add(pseudo);
             idJoueurs.add(i+1);
             scores.add(0);
@@ -78,7 +79,7 @@ public class MoteurJeu {
         ArrayList<ArrayList<Integer>> itemsJoueurs = new ArrayList<>();
         Random rdm = new Random();
 
-// 1. On prépare les formes disponibles [0, 1, 2, 3] et on les mélange
+        // 1. On prépare les formes disponibles [0, 1, 2, 3] et on les mélange
         ArrayList<Integer> formesDisponibles = new ArrayList<>();
         for (int f = 0; f < 4; f++) {
             formesDisponibles.add(f);
@@ -130,7 +131,7 @@ public class MoteurJeu {
             // Vérification victoire
             if (scores.get(joueurCourant) >= 3) {
                 System.out.println("******************************************");
-                System.out.println("VICTOIRE DE " + pseudos.get(joueurCourant) + " !");
+                System.out.println("VICTOIRE DE " + couleurGagnant + pseudos.get(joueurCourant) + RESET + " !");
                 System.out.println("******************************************");
                 victoire = true;
             }
@@ -194,61 +195,65 @@ public class MoteurJeu {
             }
             else if (direction.equalsIgnoreCase("b")) {
                 if (z == 1) {
-                    nx = x; ny = y; nz = 4; // Case normale
-                    nnx = x; nny = y; nnz = 3; // Case après saut
+                    nz = 4; // Case normale
+                    nnz = 3; // Case après saut
                 }
                 else if (z == 4 && tab[x][y][3] == 0) {
-                    nx = x; ny = y; nz = 3;
-                    if (x < 6) { nnx = x + 1; nny = y; nnz = 1; }
+                    nz = 3;
+                    if (x < 6)
+                        nnx = x + 1; nnz = 1;
                 }
                 else if (z == 3 && x < 6 && tab[x+1][y][1] == 0) {
-                    nx = x + 1; ny = y; nz = 1;
-                    nnx = x + 1; nny = y; nnz = 4;
+                    nx = x + 1; nz = 1;
+                    nnx = x + 1; nnz = 4;
                 }
                 deplacementOK = true;
             }
             else if (direction.equalsIgnoreCase("h")) {
                 if (z == 3) {
-                    nx = x; ny = y; nz = 4;
-                    nnx = x; nny = y; nnz = 1;
+                    nz = 4;
+                    nnz = 1;
                 }
                 else if (z == 4 && tab[x][y][1] == 0) {
-                    nx = x; ny = y; nz = 1;
-                    if (x > 0) { nnx = x - 1; nny = y; nnz = 3; }
+                    nz = 1;
+                    if (x > 0)
+                        nnx = x - 1; nnz = 3;
                 }
                 else if (z == 1 && x > 0 && tab[x-1][y][3] == 0) {
-                    nx = x - 1; ny = y; nz = 3;
-                    nnx = x - 1; nny = y; nnz = 4;
+                    nx = x - 1; nz = 3;
+                    nnx = x - 1; nnz = 4;
                 }
                 deplacementOK = true;
             }
             else if (direction.equalsIgnoreCase("d")) {
                 if (z == 0) {
-                    nx = x; ny = y; nz = 4;
-                    nnx = x; nny = y; nnz = 2;
+                    nz = 4;
+                    nnz = 2;
                 }
                 else if (z == 4 && tab[x][y][2] == 0) {
-                    nx = x; ny = y; nz = 2;
-                    if (y < 6) { nnx = x; nny = y + 1; nnz = 0; }
+                    nz = 2;
+                    if (y < 6) {
+                        nny = y + 1; nnz = 0; }
                 }
                 else if (z == 2 && y < 6 && tab[x][y+1][0] == 0) {
-                    nx = x; ny = y + 1; nz = 0;
-                    nnx = x; nny = y + 1; nnz = 4;
+                    ny = y + 1; nz = 0;
+                    nny = y + 1; nnz = 4;
                 }
                 deplacementOK = true;
             }
             else if (direction.equalsIgnoreCase("g")) {
                 if (z == 2) {
-                    nx = x; ny = y; nz = 4;
-                    nnx = x; nny = y; nnz = 0;
+                    nz = 4;
+                    nnz = 0;
                 }
                 else if (z == 4 && tab[x][y][0] == 0) {
-                    nx = x; ny = y; nz = 0;
-                    if (y > 0) { nnx = x; nny = y - 1; nnz = 2; }
+                    nz = 0;
+                    if (y > 0) {
+                        nny = y - 1; nnz = 2; }
                 }
                 else if (z == 0 && y > 0 && tab[x][y-1][2] == 0) {
-                    nx = x; ny = y - 1; nz = 2;
-                    nnx = x; nny = y - 1; nnz = 4;
+                    ny = y - 1; nz = 2;
+                    nny = y - 1; nnz = 4;
                 }
                 deplacementOK = true;
             }
@@ -276,7 +281,7 @@ public class MoteurJeu {
                             System.out.println("Obstacle détecté ! Vous enjambez et avancez de 2 cases.");
                             tab[x][y][z] = 0;
                             tab[nnx][nny][nnz] = idJoueur;
-                            pasRestants -= 2;
+                            pasRestants --;
                             estUnSaut = true;
                         } else {
                             System.out.println("Déplacement impossible : La case après l'obstacle est occupée !");
