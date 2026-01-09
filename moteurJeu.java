@@ -161,6 +161,15 @@ public class MoteurJeu {
     }
 
     public static void tour(int[][][] tab, ArrayList<Integer> scores, String[] couleurs, int idJoueur, int nbJoueurs, ArrayList<String> pseudos, ArrayList<ArrayList<Integer>> itemsJoueurs) {
+        final String[] COULEURS_ITEMS = {
+                "\u001B[31m", // 0: Rouge
+                "\u001B[32m", // 1: Vert
+                "\u001B[35m", // 2: Violet
+                "\u001B[36m",  // 3: Cyan
+                "\u001B[38;5;208m", // 4: Orange
+                "\u001B[38;5;205m" // 5: Rose
+        };
+
         Scanner scanner = new Scanner(System.in);
         int pasRestants = lancerDé();
         final String RESET = "\u001B[0m";
@@ -180,10 +189,14 @@ public class MoteurJeu {
                 tab[x][y][murAouvrir] = 0;
 
                 // Pour que ce soit cohérent visuellement, on ouvre aussi le mur du voisin
-                if (murAouvrir == 0 && y > 0) tab[x][y-1][2] = 0; // Gauche
-                else if (murAouvrir == 1 && x > 0) tab[x-1][y][3] = 0; // Haut
-                else if (murAouvrir == 2 && y < 6) tab[x][y+1][0] = 0; // Droite
-                else if (murAouvrir == 3 && x < 6) tab[x+1][y][1] = 0; // Bas
+                if (murAouvrir == 0 && y > 0)
+                    tab[x][y-1][2] = 0; // Gauche
+                else if (murAouvrir == 1 && x > 0)
+                    tab[x-1][y][3] = 0; // Haut
+                else if (murAouvrir == 2 && y < 6)
+                    tab[x][y+1][0] = 0; // Droite
+                else if (murAouvrir == 3 && x < 6)
+                    tab[x+1][y][1] = 0; // Bas
 
                 Plateau.afficherPlateau(tab);
             }
@@ -303,21 +316,25 @@ public class MoteurJeu {
 
                         // Vérification précise des murs physiques entre le joueur et sa destination
                         if (direction.equalsIgnoreCase("b")) {
-                            if (tab[x][y][3] == 1 || (x < 6 && tab[x + 1][y][1] == 1)) murBloquant = true;
+                            if (tab[x][y][3] == 1 || (x < 6 && tab[x + 1][y][1] == 1))
+                                murBloquant = true;
                         } else if (direction.equalsIgnoreCase("h")) {
-                            if (tab[x][y][1] == 1 || (x > 0 && tab[x - 1][y][3] == 1)) murBloquant = true;
+                            if (tab[x][y][1] == 1 || (x > 0 && tab[x - 1][y][3] == 1))
+                                murBloquant = true;
                         } else if (direction.equalsIgnoreCase("d")) {
-                            if (tab[x][y][2] == 1 || (y < 6 && tab[x][y + 1][0] == 1)) murBloquant = true;
+                            if (tab[x][y][2] == 1 || (y < 6 && tab[x][y + 1][0] == 1))
+                                murBloquant = true;
                         } else if (direction.equalsIgnoreCase("g")) {
-                            if (tab[x][y][0] == 1 || (y > 0 && tab[x][y - 1][2] == 1)) murBloquant = true;
+                            if (tab[x][y][0] == 1 || (y > 0 && tab[x][y - 1][2] == 1))
+                                murBloquant = true;
                         }
 
                         if (!murBloquant) {
-                            System.out.println("Obstacle détecté ! Vous enjambez.");
                             tab[x][y][z] = 0;
                             tab[nnx][nny][nnz] = idJoueur;
                             pasRestants--;
                             Plateau.afficherPlateau(tab);
+                            System.out.println("Obstacle détecté ! Vous enjambez.");
                         } else {
                             System.out.println(couleurs[1] + "Saut impossible" + RESET + " : Un mur ou une entité occupe la case suivante ! " + couleurs[2] + "Aucun pas n'a été consommé." + RESET);
                         }
@@ -330,18 +347,24 @@ public class MoteurJeu {
                         }
                     }
                 } else {
-                    if (cible <= -10) {
-                        int idItem = Math.abs(cible) - 10;
-                        System.out.println("Bravo ! "+ couleurs[idJoueur-2] + pseudos.get(idJoueur-2) + RESET + " a ramassé : " + Items.NOMS[idItem]);
-                        scores.set(indexJoueur, scores.get(indexJoueur) + 1);
-                        itemsJoueurs.get(indexJoueur).remove(Integer.valueOf(idItem));
-                    }
-
                     tab[x][y][z] = 0;
                     tab[nx][ny][nz] = idJoueur;
                     pasRestants--;
-
+                    System.out.println();
                     Plateau.afficherPlateau(tab);
+                    if (cible <= -10) {
+                        int idItem = Math.abs(cible) - 10;
+
+                        // On retrouve l'index de la couleur (0 à 5)
+                        int indexCouleurItem = idItem / 4;
+                        String couleurObjet = COULEURS_ITEMS[indexCouleurItem];
+
+                        System.out.println("Bravo ! " + couleurs[idJoueur - 2] + pseudos.get(idJoueur - 2) + RESET +
+                                " a ramassé : " + couleurObjet + Items.NOMS[idItem] + RESET);
+
+                        scores.set(indexJoueur, scores.get(indexJoueur) + 1);
+                        itemsJoueurs.get(indexJoueur).remove(Integer.valueOf(idItem));
+                    }
                 }
 
                 if (scores.get(indexJoueur) >= 3) {
@@ -363,7 +386,7 @@ public class MoteurJeu {
             System.out.print("Veuillez entrer 'l' pour lancer le dé ! ");
             pret = scanner.nextLine();
         } while(!pret.equals("l"));
-        int resultat = rdm.nextInt(10,20);
+        int resultat = rdm.nextInt(1,7);
         System.out.println("Vous avez obtenu un " + resultat);
         return resultat;
     }
