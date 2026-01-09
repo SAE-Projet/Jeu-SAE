@@ -17,16 +17,6 @@ public class Plateau {
                 for (int k = 0; k < 5; k++) {
                     plateau[i][j][k] = 1;
                 }
-                plateau[i][j][4] = 0; // pas de joueur
-            }
-        }
-
-        // Initialisation : tout fermé par défaut
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 7; j++) {
-                for (int k = 0; k < 5; k++) {
-                    plateau[i][j][k] = 1;
-                }
                 plateau[i][j][4] = 0;
             }
         }
@@ -257,7 +247,6 @@ public class Plateau {
     public static void afficherPlateau(int[][][] plateau) {
         final String MUR = "█";
         final String PION = "●";
-
         final String[] couleurs = {
                 "\u001B[34m",  // bleu (joueur 1)
                 "\u001B[31m",  // rouge (joueur 2)
@@ -266,13 +255,20 @@ public class Plateau {
         };
         final String RESET = "\u001B[0m";
         final String couleurMur = "\u001B[38;5;94m"; // marron
+        final String couleurChiffre = "\u001B[1;37m"; // Blanc gras pour les numéros
+
+        // --- 1. CHIFFRES DU HAUT ---
+        System.out.print("   "); // Décalage pour aligner avec le labyrinthe
+        for (int j = 1; j <= 7; j++) {
+            System.out.print(" " + couleurChiffre + j + RESET + " ");
+        }
+        System.out.println();
 
         for (int i = 0; i < 7; i++) {
-            // --- LIGNE HAUT DE LA TUILE (Coins + Mur/Joueur Haut) ---
+            // --- LIGNE HAUT DE LA TUILE ---
+            System.out.print("   "); // Espace vide à gauche (pas de numéro sur cette sous-ligne)
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR + RESET); // Coin haut-gauche (toujours mur)
-
-                // Case HAUT (indice 1)
+                System.out.print(couleurMur + MUR + RESET);
                 int contenu = plateau[i][j][1];
                 if (contenu >= 2)
                     System.out.print(couleurs[contenu - 2] + PION + RESET);
@@ -280,61 +276,57 @@ public class Plateau {
                     System.out.print(couleurMur + MUR + RESET);
                 else
                     System.out.print(" ");
-
-                System.out.print(couleurMur + MUR + RESET); // Coin haut-droit (toujours mur)
+                System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
 
-            // --- LIGNE CENTRALE DE LA TUILE (Gauche | Milieu | Droite) ---
-            for (int j = 0; j < 7; j++) {
-                // Case GAUCHE (indice 0)
-                int gauche = plateau[i][j][0];
-                if (gauche >= 2)
-                    System.out.print(couleurs[gauche - 2] + PION + RESET);
-                else if (gauche == 1)
-                    System.out.print(couleurMur + MUR + RESET);
-                else
-                    System.out.print(" ");
+            // --- LIGNE CENTRALE DE LA TUILE (Avec numéros Gauche et Droite) ---
+            // Chiffre à GAUCHE
+            System.out.print(" " + couleurChiffre + (i + 1) + RESET + " ");
 
-                // Case MILIEU (indice 4)
+            for (int j = 0; j < 7; j++) {
+                // Case GAUCHE
+                int gauche = plateau[i][j][0];
+                if (gauche >= 2) System.out.print(couleurs[gauche - 2] + PION + RESET);
+                else if (gauche == 1) System.out.print(couleurMur + MUR + RESET);
+                else System.out.print(" ");
+
+                // Case MILIEU
                 int milieu = plateau[i][j][4];
-                if (milieu >= 2)
-                    System.out.print(couleurs[milieu - 2] + PION + RESET);
+                if (milieu >= 2) System.out.print(couleurs[milieu - 2] + PION + RESET);
                 else if (milieu <= -10) {
                     int idItem = Math.abs(milieu) - 10;
                     System.out.print(Items.SYMBOLES[idItem] + RESET);
                 }
-                else
-                    System.out.print(" ");
+                else System.out.print(" ");
 
-                // Case DROITE (indice 2)
+                // Case DROITE
                 int droite = plateau[i][j][2];
-                if (droite >= 2)
-                    System.out.print(couleurs[droite - 2] + PION + RESET);
-                else if (droite == 1)
-                    System.out.print(couleurMur + MUR + RESET);
-                else
-                    System.out.print(" ");
+                if (droite >= 2) System.out.print(couleurs[droite - 2] + PION + RESET);
+                else if (droite == 1) System.out.print(couleurMur + MUR + RESET);
+                else System.out.print(" ");
             }
-            System.out.println();
+            // Chiffre à DROITE
+            System.out.println(" " + couleurChiffre + (i + 1) + RESET);
 
-            // --- LIGNE BAS DE LA TUILE (Coins + Mur/Joueur Bas) ---
+            // --- LIGNE BAS DE LA TUILE ---
+            System.out.print("   "); // Espace vide à gauche
             for (int j = 0; j < 7; j++) {
-                System.out.print(couleurMur + MUR + RESET); // Coin bas-gauche
-
-                // Case BAS (indice 3)
+                System.out.print(couleurMur + MUR + RESET);
                 int contenu = plateau[i][j][3];
-                if (contenu >= 2)
-                    System.out.print(couleurs[contenu - 2] + PION + RESET);
-                else if (contenu == 1)
-                    System.out.print(couleurMur + MUR + RESET);
-                else
-                    System.out.print(" ");
-
-                System.out.print(couleurMur + MUR + RESET); // Coin bas-droit
+                if (contenu >= 2) System.out.print(couleurs[contenu - 2] + PION + RESET);
+                else if (contenu == 1) System.out.print(couleurMur + MUR + RESET);
+                else System.out.print(" ");
+                System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
         }
-        System.out.println();
+
+        // --- 2. CHIFFRES DU BAS ---
+        System.out.print("   ");
+        for (int j = 1; j <= 7; j++) {
+            System.out.print(" " + couleurChiffre + j + RESET + " ");
+        }
+        System.out.println("\n");
     }
 }
