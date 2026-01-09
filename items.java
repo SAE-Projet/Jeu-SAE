@@ -9,7 +9,7 @@ public class Items {
     public static final String RESET      = "\u001B[0m";
 
     //Initialisation des formes possibles pour nos items
-    private static final String[] FORMES = {"★", "♦", "▲", "♠"};
+    private static final String[] FORMES = {"*", "◆", "▲", "¤"};
 
     // 6 couleurs x 4 formes = 24 items
     public static final String[] SYMBOLES = {
@@ -23,11 +23,11 @@ public class Items {
 
     //Initialisation des noms de nos items
     public static final String[] NOMS = {
-            "Étoile Nebula", "Améthyste", "Pyramide pourpre", "Pique galaxy",
-            "Étoile Emeraude", "Jade", "Pyramide sylvestre", "Pique de ronce",
-            "Étoile d'Azur", "Saphir", "Pyramide marin", "Pique abyssal",
-            "Étoile Givrée", "Cyanite", "Pyramide de glace", "Pique de givre",
-            "Étoile Filante", "Rhodonite", "Pyramide rosé", "Pique bonbon",
-            "Étoile Solaire", "Topaze", "Pyramide enflammé", "Pique de cuivre"
+            "Étoile Nebula", "Améthyste", "Pyramide pourpre", "Artefact galaxy",
+            "Étoile Emeraude", "Jade", "Pyramide sylvestre", "Artefact de ronce",
+            "Étoile d'Azur", "Saphir", "Pyramide marin", "Artefact abyssal",
+            "Étoile Givrée", "Cyanite", "Pyramide de glace", "Artefact de givre",
+            "Étoile Filante", "Rhodonite", "Pyramide rosé", "Artefact bonbon",
+            "Étoile Solaire", "Topaze", "Pyramide enflammé", "Artefact de cuivre"
     };
 }
