@@ -1,4 +1,5 @@
 public class Items {
+    //Initialisation des couleurs possibles pour nos items
     public static final String VIOLET     = "\u001B[35m";
     public static final String VERT       = "\u001B[32m";
     public static final String ROUGE      = "\u001B[31m";
@@ -7,6 +8,7 @@ public class Items {
     public static final String ORANGE     = "\u001B[38;5;208m";
     public static final String RESET      = "\u001B[0m";
 
+    //Initialisation des formes possibles pour nos items
     private static final String[] FORMES = {"★", "♦", "▲", "♠"};
 
     // 6 couleurs x 4 formes = 24 items
@@ -19,6 +21,7 @@ public class Items {
             ORANGE+FORMES[0]+RESET,     ORANGE+FORMES[1]+RESET,     ORANGE+FORMES[2]+RESET,     ORANGE+FORMES[3]+RESET
     };
 
+    //Initialisation des noms de nos items
     public static final String[] NOMS = {
             "Étoile Nebula", "Améthyste", "Pyramide pourpre", "Pique galaxy",
             "Étoile Emeraude", "Jade", "Pyramide sylvestre", "Pique de ronce",
