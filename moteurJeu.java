@@ -25,7 +25,7 @@ public class MoteurJeu {
         };
 
         final String couleurGagnant = "\u001B[38;5;214m";
-        final String RESET = "\u001B[0m"; // couleur du terminal
+        final String RESET = "\u001B[0m"; // réinitialise les couleurs
         Scanner scanner = new Scanner(System.in);
         int nbJoueurs;
         // Création des listes des pseudos, des ID des joueurs, et de leur pseudo
@@ -115,9 +115,10 @@ public class MoteurJeu {
         int joueurCourant = 0;
 
         boolean victoire = false;
+        int nbtours = 1;
         while (!victoire) {
             int idJoueur = idJoueurs.get(joueurCourant);
-            System.out.println("\nC'EST AU TOUR DE : " + couleurs[joueurCourant] + pseudos.get(joueurCourant) + RESET);
+            System.out.println("Tour n°"+ nbtours +" - C'est au tour de : " + couleurs[joueurCourant] + pseudos.get(joueurCourant) + RESET);
 
             // Affichage des items restants à trouver pour le joueur
             System.out.print("Items à trouver : ");
@@ -126,19 +127,22 @@ public class MoteurJeu {
                 System.out.print(Items.SYMBOLES[id] + " ");
             }
             System.out.println();
+            if (nbtours >= 2) {
+                System.out.println("Le plateau tremble...");
+                Plateau.faireCoulisser(plateau);
+                Plateau.afficherPlateau(plateau);
+            }
             tour(plateau, scores, couleurs, idJoueur, nbJoueurs, pseudos, itemsJoueurs);
+            if (joueurCourant == nbJoueurs-1)
+                nbtours ++;
 
             // Vérification victoire
             if (scores.get(joueurCourant) >= 3) {
-                System.out.println("******************************************");
+                System.out.println("*".repeat(14 + pseudos.get(joueurCourant).length()));
                 System.out.println("VICTOIRE DE " + couleurGagnant + pseudos.get(joueurCourant) + RESET + " !");
-                System.out.println("******************************************");
+                System.out.println("*".repeat(14 + pseudos.get(joueurCourant).length()));
                 victoire = true;
             }
-
-            System.out.println("Le plateau tremble...");
-            Plateau.faireCoulisser(plateau);
-            Plateau.afficherPlateau(plateau);
 
             joueurCourant = (joueurCourant + 1) % nbJoueurs;
         }
@@ -166,22 +170,37 @@ public class MoteurJeu {
         while (pasRestants > 0 && !stop) {
             boolean stopAnnule = false;
             int[] pos = trouverJoueur(tab, idJoueur);
-            int x = pos[0], y = pos[1], z = pos[2];
-            int nx = x, ny = y, nz = z;
+            int x = pos[0]; int y = pos[1]; int z = pos[2];
 
-            // Variables pour le saut (enjambement)
-            int nnx = x, nny = y, nnz = z;
-            boolean deplacementOK = false;
-            boolean estUnSaut = false;
+            // On vérifie si les 4 murs de la tuile actuelle (autour du joueur) sont fermés
+            if (tab[x][y][0] == 1 && tab[x][y][1] == 1 && tab[x][y][2] == 1 && tab[x][y][3] == 1) {
+                System.out.println("⚠️ Vous êtes enfermé ! Une issue de secours s'ouvre magiquement...");
+                Random rdmSecours = new Random();
+                int murAouvrir = rdmSecours.nextInt(4); // Choisit un mur au hasard entre 0 et 3
+                tab[x][y][murAouvrir] = 0;
+
+                // Pour que ce soit cohérent visuellement, on ouvre aussi le mur du voisin
+                if (murAouvrir == 0 && y > 0) tab[x][y-1][2] = 0; // Gauche
+                else if (murAouvrir == 1 && x > 0) tab[x-1][y][3] = 0; // Haut
+                else if (murAouvrir == 2 && y < 6) tab[x][y+1][0] = 0; // Droite
+                else if (murAouvrir == 3 && x < 6) tab[x+1][y][1] = 0; // Bas
+
+                Plateau.afficherPlateau(tab);
+            }
+
+            int nx = x; int ny = y; int nz = z;
+            int nnx = x; int nny = y; int nnz = z;
+
+            boolean movePossible = false;
 
             System.out.print("Il vous reste " + pasRestants + " pas. Direction ? (g, d, h, b) \n" +
                     "Si vous voulez vous arrêter ici, veuillez entrer 'q' : ");
             String direction = scanner.nextLine();
 
-            if (direction.equalsIgnoreCase("q")){
+            if (direction.equalsIgnoreCase("q")) {
                 String choix;
                 do {
-                    System.out.print("Etes-vous sûr de vouloir abandonner vos " + pasRestants + " pas restants ? o/n : ");
+                    System.out.print("Êtes-vous sûr de vouloir abandonner vos " + pasRestants + " pas restants ? o/n : ");
                     choix = scanner.nextLine();
                 } while (!choix.equalsIgnoreCase("o") && !choix.equalsIgnoreCase("n"));
 
@@ -189,80 +208,85 @@ public class MoteurJeu {
                     System.out.println(couleurs[idJoueur-2] + pseudos.get(idJoueur-2) + RESET + " a décidé de s'arrêter !");
                     stop = true;
                 } else {
-                    System.out.println(couleurs[idJoueur-2] + pseudos.get(idJoueur-2) + RESET + " a changé d'avis... veuillez rejouer s'il vous plaît.");
+                    System.out.println(couleurs[idJoueur-2] + pseudos.get(idJoueur-2) + RESET + " a changé d'avis...");
                     stopAnnule = true;
                 }
             }
+
             else if (direction.equalsIgnoreCase("b")) {
                 if (z == 1) {
-                    nz = 4; // Case normale
-                    nnz = 3; // Case après saut
-                }
-                else if (z == 4 && tab[x][y][3] == 0) {
+                    nz = 4;
+                    nnz = 3;
+                    movePossible = true;
+                } else if (z == 4 && tab[x][y][3] != 1) {
                     nz = 3;
-                    if (x < 6)
-                        nnx = x + 1; nnz = 1;
+                    nnx = (x < 6) ? x + 1 : x;
+                    nnz = (x < 6) ? 1 : 3;
+                    movePossible = true;
+                } else if (z == 3 && x < 6 && tab[x + 1][y][1] != 1) {
+                    nx = x + 1;
+                    nz = 1;
+                    nnx = x + 1;
+                    nnz = 4;
+                    movePossible = true;
                 }
-                else if (z == 3 && x < 6 && tab[x+1][y][1] == 0) {
-                    nx = x + 1; nz = 1;
-                    nnx = x + 1; nnz = 4;
-                }
-                deplacementOK = true;
-            }
-            else if (direction.equalsIgnoreCase("h")) {
+            } else if (direction.equalsIgnoreCase("h")) {
                 if (z == 3) {
                     nz = 4;
                     nnz = 1;
-                }
-                else if (z == 4 && tab[x][y][1] == 0) {
+                    movePossible = true;
+                } else if (z == 4 && tab[x][y][1] != 1) {
                     nz = 1;
-                    if (x > 0)
-                        nnx = x - 1; nnz = 3;
+                    nnx = (x > 0) ? x - 1 : x;
+                    nnz = (x > 0) ? 3 : 1;
+                    movePossible = true;
+                } else if (z == 1 && x > 0 && tab[x - 1][y][3] != 1) {
+                    nx = x - 1;
+                    nz = 3;
+                    nnx = x - 1;
+                    nnz = 4;
+                    movePossible = true;
                 }
-                else if (z == 1 && x > 0 && tab[x-1][y][3] == 0) {
-                    nx = x - 1; nz = 3;
-                    nnx = x - 1; nnz = 4;
-                }
-                deplacementOK = true;
-            }
-            else if (direction.equalsIgnoreCase("d")) {
+            } else if (direction.equalsIgnoreCase("d")) {
                 if (z == 0) {
                     nz = 4;
                     nnz = 2;
-                }
-                else if (z == 4 && tab[x][y][2] == 0) {
+                    movePossible = true;
+                } else if (z == 4 && tab[x][y][2] != 1) {
                     nz = 2;
-                    if (y < 6) {
-                        nny = y + 1; nnz = 0; }
+                    nny = (y < 6) ? y + 1 : y;
+                    nnz = (y < 6) ? 0 : 2;
+                    movePossible = true;
+                } else if (z == 2 && y < 6 && tab[x][y + 1][0] != 1) {
+                    ny = y + 1;
+                    nz = 0;
+                    nny = y + 1;
+                    nnz = 4;
+                    movePossible = true;
                 }
-                else if (z == 2 && y < 6 && tab[x][y+1][0] == 0) {
-                    ny = y + 1; nz = 0;
-                    nny = y + 1; nnz = 4;
-                }
-                deplacementOK = true;
-            }
-            else if (direction.equalsIgnoreCase("g")) {
+            } else if (direction.equalsIgnoreCase("g")) {
                 if (z == 2) {
                     nz = 4;
                     nnz = 0;
-                }
-                else if (z == 4 && tab[x][y][0] == 0) {
+                    movePossible = true;
+                } else if (z == 4 && tab[x][y][0] != 1) {
                     nz = 0;
-                    if (y > 0) {
-                        nny = y - 1; nnz = 2; }
+                    nny = (y > 0) ? y - 1 : y;
+                    nnz = (y > 0) ? 2 : 0;
+                    movePossible = true;
+                } else if (z == 0 && y > 0 && tab[x][y - 1][2] != 1) {
+                    ny = y - 1;
+                    nz = 2;
+                    nny = y - 1;
+                    nnz = 4;
+                    movePossible = true;
                 }
-                else if (z == 0 && y > 0 && tab[x][y-1][2] == 0) {
-                    ny = y - 1; nz = 2;
-                    nny = y - 1; nnz = 4;
-                }
-                deplacementOK = true;
             }
 
-            if (deplacementOK) {
+            if (movePossible) {
                 int cible = tab[nx][ny][nz];
                 boolean obstacle = false;
 
-                // Détection si la cible est un obstacle (Joueur adverse ou Item adverse)
                 if (cible >= 2 && cible != idJoueur) {
                     obstacle = true;
                 } else if (cible <= -10) {
@@ -273,27 +297,42 @@ public class MoteurJeu {
                 }
 
                 if (obstacle) {
-                    // Tentative de saut : On vérifie si la case d'après est libre (pas de mur et pas d'obstacle)
-                    // On vérifie aussi que le saut ne sort pas du plateau et consomme 2 pas
-                    if (nnx != x || nny != y || nnz != z) {
-                        int apresSaut = tab[nnx][nny][nnz];
-                        if (apresSaut == 0) {
-                            System.out.println("Obstacle détecté ! Vous enjambez et avancez de 2 cases.");
+                    // Si on peut effectivement sauter (destination nn differente de l'obstacle et vide)
+                    if ((nnx != nx || nny != ny || nnz != nz) && tab[nnx][nny][nnz] == 0) {
+                        boolean murBloquant = false;
+
+                        // Vérification précise des murs physiques entre le joueur et sa destination
+                        if (direction.equalsIgnoreCase("b")) {
+                            if (tab[x][y][3] == 1 || (x < 6 && tab[x + 1][y][1] == 1)) murBloquant = true;
+                        } else if (direction.equalsIgnoreCase("h")) {
+                            if (tab[x][y][1] == 1 || (x > 0 && tab[x - 1][y][3] == 1)) murBloquant = true;
+                        } else if (direction.equalsIgnoreCase("d")) {
+                            if (tab[x][y][2] == 1 || (y < 6 && tab[x][y + 1][0] == 1)) murBloquant = true;
+                        } else if (direction.equalsIgnoreCase("g")) {
+                            if (tab[x][y][0] == 1 || (y > 0 && tab[x][y - 1][2] == 1)) murBloquant = true;
+                        }
+
+                        if (!murBloquant) {
+                            System.out.println("Obstacle détecté ! Vous enjambez.");
                             tab[x][y][z] = 0;
                             tab[nnx][nny][nnz] = idJoueur;
-                            pasRestants --;
-                            estUnSaut = true;
+                            pasRestants--;
+                            Plateau.afficherPlateau(tab);
                         } else {
-                            System.out.println("Déplacement impossible : La case après l'obstacle est occupée !");
+                            System.out.println(couleurs[1] + "Saut impossible" + RESET + " : Un mur ou une entité occupe la case suivante ! " + couleurs[2] + "Aucun pas n'a été consommé." + RESET);
                         }
                     } else {
-                        System.out.println("Déplacement impossible : Un obstacle bloque le chemin !");
+                        // Cas où la case derrière l'obstacle est un mur de bordure ou une autre entité
+                        if (nnx == nx && nny == ny && nnz == nz) {
+                            System.out.println("Vous ne pouvez pas sauter au-delà du bord du plateau !");
+                        } else {
+                            System.out.println(couleurs[1] + "Saut impossible" + RESET + " : Un mur ou une entité occupe la case suivante ! " + couleurs[2] + "Aucun pas n'a été consommé." + RESET);
+                        }
                     }
                 } else {
-                    // Déplacement normal (Vide ou Item à soi)
                     if (cible <= -10) {
                         int idItem = Math.abs(cible) - 10;
-                        System.out.println("Bravo ! Vous avez ramassé : " + Items.NOMS[idItem]);
+                        System.out.println("Bravo ! "+ couleurs[idJoueur-2] + pseudos.get(idJoueur-2) + RESET + " a ramassé : " + Items.NOMS[idItem]);
                         scores.set(indexJoueur, scores.get(indexJoueur) + 1);
                         itemsJoueurs.get(indexJoueur).remove(Integer.valueOf(idItem));
                     }
@@ -301,23 +340,17 @@ public class MoteurJeu {
                     tab[x][y][z] = 0;
                     tab[nx][ny][nz] = idJoueur;
                     pasRestants--;
-                }
 
-                // Rafraîchissement du plateau après mouvement réussi
-                if (!obstacle || estUnSaut) {
-                    System.out.println();
-                    for (int i = 0; i < nbJoueurs; i++) {
-                        System.out.print(couleurs[i] + "● " + RESET);
-                        System.out.println("Score " + pseudos.get(i) + " : " + scores.get(i));
-                    }
                     Plateau.afficherPlateau(tab);
                 }
 
                 if (scores.get(indexJoueur) >= 3) {
                     return;
                 }
-            } else if (!stop && !stopAnnule) {
-                System.out.println("Déplacement impossible : Un mur vous bloque !");
+            } else {
+                if (!stop && !stopAnnule) {
+                    System.out.println("Vous être réntré dans un mur ! Aucun pas n'a été perdu, veuillez rejouer.");
+                }
             }
         }
     }
@@ -330,7 +363,7 @@ public class MoteurJeu {
             System.out.print("Veuillez entrer 'l' pour lancer le dé ! ");
             pret = scanner.nextLine();
         } while(!pret.equals("l"));
-        int resultat = rdm.nextInt(1,7);
+        int resultat = rdm.nextInt(10,20);
         System.out.println("Vous avez obtenu un " + resultat);
         return resultat;
     }
