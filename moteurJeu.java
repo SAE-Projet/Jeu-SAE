@@ -385,7 +385,7 @@ public class MoteurJeu {
         do {
             System.out.print("Veuillez entrer 'l' pour lancer le dé ! ");
             pret = scanner.nextLine();
-        } while(!pret.equals("l"));
+        } while(!pret.equalsIgnoreCase("l"));
         int resultat = rdm.nextInt(1,7);
         System.out.println("Vous avez obtenu un " + resultat);
         return resultat;
