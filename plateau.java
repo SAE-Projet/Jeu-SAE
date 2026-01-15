@@ -66,7 +66,7 @@ public class Plateau {
         }
 
         // Placement des joueurs avec au moins 2 sorties
-        if (idJoueurs.size() >= 1) { // J1 Haut-Gauche
+        if (!idJoueurs.isEmpty()) { // J1 Haut-Gauche
             plateau[0][0][4] = idJoueurs.get(0);
             plateau[0][0][2] = 0; // droite
             plateau[0][0][3] = 0; // bas
@@ -287,24 +287,32 @@ public class Plateau {
             for (int j = 0; j < 7; j++) {
                 // Case GAUCHE
                 int gauche = plateau[i][j][0];
-                if (gauche >= 2) System.out.print(couleurs[gauche - 2] + PION + RESET);
-                else if (gauche == 1) System.out.print(couleurMur + MUR + RESET);
-                else System.out.print(" ");
+                if (gauche >= 2)
+                    System.out.print(couleurs[gauche - 2] + PION + RESET);
+                else if (gauche == 1)
+                    System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
 
                 // Case MILIEU
                 int milieu = plateau[i][j][4];
-                if (milieu >= 2) System.out.print(couleurs[milieu - 2] + PION + RESET);
+                if (milieu >= 2)
+                    System.out.print(couleurs[milieu - 2] + PION + RESET);
                 else if (milieu <= -10) {
                     int idItem = Math.abs(milieu) - 10;
                     System.out.print(Items.SYMBOLES[idItem] + RESET);
                 }
-                else System.out.print(" ");
+                else
+                    System.out.print(" ");
 
                 // Case DROITE
                 int droite = plateau[i][j][2];
-                if (droite >= 2) System.out.print(couleurs[droite - 2] + PION + RESET);
-                else if (droite == 1) System.out.print(couleurMur + MUR + RESET);
-                else System.out.print(" ");
+                if (droite >= 2)
+                    System.out.print(couleurs[droite - 2] + PION + RESET);
+                else if (droite == 1)
+                    System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
             }
             // Chiffre à DROITE
             System.out.println(" " + couleurChiffre + (i + 1) + RESET);
@@ -314,9 +322,12 @@ public class Plateau {
             for (int j = 0; j < 7; j++) {
                 System.out.print(couleurMur + MUR + RESET);
                 int contenu = plateau[i][j][3];
-                if (contenu >= 2) System.out.print(couleurs[contenu - 2] + PION + RESET);
-                else if (contenu == 1) System.out.print(couleurMur + MUR + RESET);
-                else System.out.print(" ");
+                if (contenu >= 2)
+                    System.out.print(couleurs[contenu - 2] + PION + RESET);
+                else if (contenu == 1)
+                    System.out.print(couleurMur + MUR + RESET);
+                else
+                    System.out.print(" ");
                 System.out.print(couleurMur + MUR + RESET);
             }
             System.out.println();
